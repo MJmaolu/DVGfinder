@@ -143,7 +143,7 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 See the [open issues](https://github.com/MJmaolu/DVGfinder/issues) for a list of proposed features (and known issues).
 
 
-
+/*
 <!-- CONTRIBUTING -->
 ## Contributing
 
@@ -154,7 +154,7 @@ Contributions are what make the open source community such an amazing place to b
 3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
 4. Push to the Branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
-
+*/
 
 
 <!-- LICENSE -->
@@ -167,7 +167,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 <!-- CONTACT -->
 ## Contact
 
-María José Olmo-Uceda - [@twitter_handle](https://twitter.com/twitter_handle) - mariajose.olmo@csic.es
+María José Olmo-Uceda - [@twitter_handle](https://twitter.com/twitter_handle) - maolu@alumni.uv.es
 
 Project Link: [https://github.com/MJmaolu/DVGfinder](https://github.com/MJmaolu/DVGfinder)
 
