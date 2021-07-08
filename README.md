@@ -67,6 +67,8 @@ To get a local copy up and running follow these simple steps.
 
 DVGfinder uses the ViReMa-a (v0.23) and DI-tector_06.py programs. 
 
+This third party scripts are in the ExternalNeeds directory so you only have to follow the nexts steps to run DVGfinder.
+
 
 ### Installation
 
@@ -74,8 +76,9 @@ DVGfinder uses the ViReMa-a (v0.23) and DI-tector_06.py programs.
    ```sh
    git clone https://github.com/MJmaolu/DVGfinder.git
    ```
-2.
+2. Create a new environment with conda with all the dependencies needed to run DVGfinder
    ```
+   
    ```
 
 
