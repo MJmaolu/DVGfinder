@@ -40,7 +40,7 @@ DVGfinder es un
     <img src="LOGO%20DVGfinder_marron.png" alt="Logo" width="80" height="80">
   </a>
 
-  <h3 align="center">project_title</h3>
+  <h3 align="center">DVGfinder</h3>
 
   <p align="center">
     project_description
@@ -169,7 +169,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 <!-- CONTACT -->
 ## Contact
 
-Your Name - [@twitter_handle](https://twitter.com/twitter_handle) - email
+María José Olmo-Uceda - [@twitter_handle](https://twitter.com/twitter_handle) - mariajose.olmo@csic.es
 
 Project Link: [https://github.com/MJmaolu/DVGfinder](https://github.com/MJmaolu/DVGfinder)
 
