@@ -178,4 +178,4 @@ Project Link: [https://github.com/MJmaolu/DVGfinder](https://github.com/MJmaolu/
 [license-shield]: https://img.shields.io/github/license/MJmaolu/DVGfinder.svg?style=for-the-badge
 [license-url]: https://github.com/MJmaolu/DVGfinder/blob/master/LICENSE.txt
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
-[linkedin-url]: https://linkedin.com/in/github_username
+[linkedin-url]: www.linkedin.com/in/maria-jose-olmo-uceda
