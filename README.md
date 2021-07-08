@@ -131,7 +131,7 @@ This is an example of how to list things you need to use the software and how to
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-`python3 DVGfinder.py -fq <i> fastq_file </i> -r *virus_reference* -m *margin* -n *number_processes*`
+`python3 DVGfinder.py -fq _fastq_file_ -r _virus_reference_ -m _margin_ -n *number_processes*`
 
 _For more examples, please refer to the [Documentation](https://example.com)_
 
