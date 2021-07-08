@@ -37,7 +37,7 @@ DVGfinder es un
 <br />
 <p align="center">
   <a href="https://github.com/MJmaolu/DVGfinder">
-    <img src="LOGO%20DVGfinder_marron.png" alt="Logo" width="80" height="80">
+    <img src="LOGO%20DVGfinder_marron.png" alt="Logo" width="200" /*height="80"*/>
   </a>
 
   <h3 align="center">DVGfinder</h3>
