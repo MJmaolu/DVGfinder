@@ -1,7 +1,5 @@
 # DVGfinder
-![](https://github.com/MJmaolu/DVGfinder/blob/main/LOGO%20DVGfinder_marron.png) { width=50% }
 
-DVGfinder es un 
 <!--
 *** Thanks for checking out the Best-README-Template. If you have a suggestion
 *** that would make this better, please fork the repo and create a pull request
@@ -37,13 +35,13 @@ DVGfinder es un
 <br />
 <p align="center">
   <a href="https://github.com/MJmaolu/DVGfinder">
-    <img src="LOGO%20DVGfinder_marron.png" alt="Logo" width="500" /*height="80"*/>
+    <img src="LOGO%20DVGfinder_marron.png" alt="Logo" width="800" /*height="80"*/>
   </a>
 
   <h3 align="center">DVGfinder</h3>
 
   <p align="center">
-    project_description
+    DVGfinder is a program that integrates the DVGs ViReMa-a and DI-tector search algorithms, making the analysis of a sample easier and more intuitive. 
     <br />
     <a href="https://github.com/MJmaolu/DVGfinder"><strong>Explore the docs »</strong></a>
     <br />
