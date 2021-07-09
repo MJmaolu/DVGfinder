@@ -89,7 +89,7 @@ This third party scripts are in the ExternalNeeds directory so you only have to 
    
 2. Create a new environment with conda with all the dependencies needed to run DVGfinder
    ```sh
-   conda env create -f env env/DVGfinder_env.yaml
+   conda env create -f env dvgfinder_env.yaml
    ```
    
 3. Activate DVGfinder environment 
