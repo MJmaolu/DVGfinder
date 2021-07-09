@@ -83,13 +83,15 @@ This third party scripts are in the ExternalNeeds directory so you only have to 
 2. Unzip model file
 
   ```sh
-  unzip -d rf_tunning_x17.sav.zip 
-  
+  unzip -d rf_tunning_x17.sav.zip
+  ```
 
+   
 2. Create a new environment with conda with all the dependencies needed to run DVGfinder
    ```sh
    conda env create -f env env/DVGfinder_env.yaml
    ```
+   
 3. Activate DVGfinder environment 
    ```sh
    conda activate dvgfinder_env
