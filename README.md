@@ -83,7 +83,7 @@ This third party scripts are in the ExternalNeeds directory so you only have to 
 2. Unzip model file
 
   ```sh
-  unzip -d rf_tunning_x17.sav.zip
+  unzip rf_tunning_x17.sav.zip
   ```
 
    
