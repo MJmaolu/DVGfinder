@@ -53,11 +53,14 @@
 
 * **ViReMa-a (0.23)**:
 
-  Beauclair G, Mura M, Combredet C, Tangy F, Jouvenet N, Komarova AV. DI-tector: defective interfering viral genomes' detector for next-generation sequencing data. RNA. 2018 Oct;24(10):1285-1296. doi: 10.1261/rna.066910.118. Epub 2018 Jul 16. PMID: 30012569; PMCID: PMC6140465.
+Routh A, Johnson JE. Discovery of functional genomic motifs in viruses with ViReMa-a Virus Recombination Mapper-for analysis of next-generation sequencing data. Nucleic Acids Res. 2014 Jan;42(2):e11. <doi: 10.1093/nar/gkt916>. Epub 2013 Oct 16. PMID: 24137010; PMCID: PMC3902915.
+  
 
 * **DI-tector_06.py**: 
+
+Beauclair G, Mura M, Combredet C, Tangy F, Jouvenet N, Komarova AV. DI-tector: defective interfering viral genomes' detector for next-generation sequencing data. RNA. 2018 Oct;24(10):1285-1296. <doi: 10.1261/rna.066910.118>. Epub 2018 Jul 16. PMID: 30012569; PMCID: PMC6140465.
  
-  Routh A, Johnson JE. Discovery of functional genomic motifs in viruses with ViReMa-a Virus Recombination Mapper-for analysis of next-generation sequencing data. Nucleic Acids Res. 2014 Jan;42(2):e11. doi: 10.1093/nar/gkt916. Epub 2013 Oct 16. PMID: 24137010; PMCID: PMC3902915.
+  
 
 <!-- GETTING STARTED -->
 ## Getting Started
