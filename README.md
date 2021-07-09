@@ -52,10 +52,8 @@
 
 ### Built With
 
-* []()
-* []()
-* []()
-
+* ViReMa-a (0.23) <doi: 10.1093/nar/gkt916>
+* DI-tector_06.py <doi:10.1261/rna.066910.118>
 
 
 <!-- GETTING STARTED -->
@@ -77,20 +75,18 @@ This third party scripts are in the ExternalNeeds directory so you only have to 
    git clone https://github.com/MJmaolu/DVGfinder.git
    ```
 2. Create a new environment with conda with all the dependencies needed to run DVGfinder
+   ```sh
+   conda env create -f env env/DVGfinder_env.yaml
    ```
-   
+3. Activate DVGfinder environment 
+   ```sh
+   conda activate dvgfinder_env
    ```
-
-
 
 <!-- USAGE EXAMPLES -->
 ## Usage
 
 ```python3 DVGfinder.py -fq fastq_file [-r virus_reference] [-m margin] [-n number_processes]```
-
-
-
-
 
 
 <!-- LICENSE -->
