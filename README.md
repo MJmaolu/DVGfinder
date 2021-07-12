@@ -80,17 +80,27 @@ This third party scripts are in the ExternalNeeds directory so you only have to 
    ```sh
    git clone https://github.com/MJmaolu/DVGfinder.git
    ```
-2. Unzip model file
+
+2. Go to the DVGfinder directory
+   ```sh
+   cd DVGfinder-main
+   ```
+   
+3. Unzip model file
    ```sh
    unzip rf_tunning_x17.sav.zip
    ```
-
-3. Create a new environment with conda with all the dependencies needed to run DVGfinder
+   
+4. Give execution permission to all the scripts in the DVGfinder directory
+   ```sh
+   chmod -R +x .
+   ```
+5. Create a new environment with conda with all the dependencies needed to run DVGfinder
    ```sh
    conda env create -f dvgfinder_env.yaml
    ```
    
-4. Activate DVGfinder environment 
+6. Activate DVGfinder environment 
    ```sh
    conda activate dvgfinder_env
    ```
