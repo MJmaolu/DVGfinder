@@ -83,7 +83,7 @@ This third party scripts are in the ExternalNeeds directory so you only have to 
 
 2. Go to the DVGfinder directory
    ```sh
-   cd DVGfinder-main
+   cd DVGfinder
    ```
    
 3. Unzip model file
