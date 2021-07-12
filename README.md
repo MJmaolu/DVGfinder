@@ -127,17 +127,6 @@ Project Link: [https://github.com/MJmaolu/DVGfinder](https://github.com/MJmaolu/
 
 
 
-<!-- ACKNOWLEDGEMENTS -->
-## Acknowledgements
-
-* []()
-* []()
-* []()
-
-
-
-
-
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 [contributors-shield]: https://img.shields.io/github/contributors/MJmaolu/DVGfinder.svg?style=for-the-badge
