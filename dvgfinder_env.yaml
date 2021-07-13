@@ -9,7 +9,6 @@ dependencies:
   - python = 3.9.5
   - bowtie
   - samtools = 1.10
-  - bcftools = 1.9
   - bwa = 0.7.17
   - pandas = 1.2.4
   - numpy = 1.19.5
@@ -21,5 +20,4 @@ dependencies:
   - scipy = 1.6.3
   - biopython = 1.79
   - matplotlib = 3.4.2
-  - tabulate = 0.8.9
   #- bio = 0.5.0
