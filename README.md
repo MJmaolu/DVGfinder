@@ -38,8 +38,8 @@
   </ol>
 </details>
 
-<!-- GETTING STARTED -->
-## Getting started
+<!-- BUILT WITH -->
+## Built with
 ### DVGs identifying algorithms
 
 * **ViReMa-a (0.23)**:
