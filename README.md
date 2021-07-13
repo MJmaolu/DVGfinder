@@ -76,7 +76,7 @@ This third party scripts are in the ExternalNeeds directory so you only have to 
 
 ### Installation
 
-1. Clone the repo
+1. Clone the repo in the directory of your choice
    ```sh
    git clone https://github.com/MJmaolu/DVGfinder.git
    ```
@@ -109,13 +109,6 @@ This third party scripts are in the ExternalNeeds directory so you only have to 
 ## Usage
 
 ```python3 DVGfinder.py -fq fastq_file [-r virus_reference] [-m margin] [-n number_processes]```
-
-
-<!-- LICENSE -->
-## License
-
-Distributed under the MIT License. See `LICENSE` for more information.
-
 
 
 <!-- CONTACT -->
