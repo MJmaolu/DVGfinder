@@ -10,14 +10,6 @@
   <p align="center">
     DVGfinder is a program that integrates the DVGs ViReMa-a and DI-tector search algorithms, making the analysis of a sample easier and more intuitive. 
     <br />
-    <a href="https://github.com/MJmaolu/DVGfinder"><strong>Explore the docs »</strong></a>
-    <br />
-    <br />
-    <a href="https://github.com/MJmaolu/DVGfinder">View Demo</a>
-    ·
-    <a href="https://github.com/MJmaolu/DVGfinder/issues">Report Bug</a>
-    ·
-    <a href="https://github.com/MJmaolu/DVGfinder/issues">Request Feature</a>
   </p>
 </p>
 
