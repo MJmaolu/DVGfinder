@@ -468,7 +468,7 @@ def header_html(sample_name):
         }
     </style>
     <div id="container">
-      <img src="../../LOGODVGfinder_simple_white.png" width =250>
+      <img src="../LOGODVGfinder_simple_white.png" width =250>
       <h2> Sample """ + sample_name + """ </h2>
     </div>
     </html>"""
