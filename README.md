@@ -35,7 +35,6 @@
     <li><a href="#usage">Usage</a></li>
     <li><a href="#tutorial">Tutorial</a></li>    
     <li><a href="#contact">Contact</a></li>
-    <li><a href="#acknowledgements">Acknowledgements</a></li>
   </ol>
 </details>
 
