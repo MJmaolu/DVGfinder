@@ -33,6 +33,7 @@
       </ul>
     </li>
     <li><a href="#usage">Usage</a></li>
+    <li><a href="#tutorial">Tutorial</a></li>    
     <li><a href="#contact">Contact</a></li>
     <li><a href="#acknowledgements">Acknowledgements</a></li>
   </ol>
@@ -100,6 +101,26 @@ This third party scripts are in the ExternalNeeds directory so you only have to 
 ## Usage
 
 ```python3 DVGfinder.py -fq fastq_file [-r virus_reference] [-m margin] [-n number_processes]```
+
+<!-- TUTORIAL -->
+## Tutorial
+
+You can explore an example of results in the directory 'example_sarscov2'. 
+
+To test the program follow the next steps:
+
+1. Unzip the fastq.zip file
+```sh
+unzip example_sarscov2/example_sarscov2.fastq.zip
+```
+
+3. Run DVGfinder on the example sample
+
+```
+python3 DVGfinder.py -fq example_sarscov2/example_sarscov2.fastq -n number_of_process
+```
+
+4. Wait and your results will appear in the 'FinalReports' directory
 
 
 <!-- CONTACT -->
