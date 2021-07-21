@@ -103,7 +103,8 @@ This third party scripts are in the ExternalNeeds directory so you only have to 
 ```python3 DVGfinder.py -fq fastq_file [-r virus_reference] [-m margin] [-n number_processes]```
 
 <!-- TUTORIAL -->
-## Tutorial
+
+## Tutorial
 
 You can explore an example of results in the directory 'example_sarscov2'. 
 
