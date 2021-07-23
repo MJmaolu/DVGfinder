@@ -117,7 +117,7 @@ unzip example_sarscov2/example_sarscov2.fastq.zip
 3. Run DVGfinder on the example sample
 
 ```
-python3 DVGfinder.py -fq example_sarscov2/example_sarscov2.fastq -n your_number_of_process
+python3 DVGfinder.py -fq example_sarscov2.fastq -n *your_number_of_process*
 ```
 
 4. Wait and your results will appear in the 'FinalReports' directory
