@@ -5,7 +5,7 @@
     <img src="LOGO%20DVGfinder_marron.png" alt="Logo" width="800" /*height="80"*/>
   </a>
 
-  <h3 align="center">DVGfinder</h3>
+  <h3 align="center">DVGfinder_v2</h3>
 
   <p align="center">
     DVGfinder is a program that integrates the DVGs ViReMa-a and DI-tector search algorithms, making the analysis of a sample easier and more intuitive. Also, DVGfinder implements a Random Forest model to filter out false positives introduced by the search algorithms.
