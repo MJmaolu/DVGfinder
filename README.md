@@ -99,7 +99,7 @@ This third party scripts are in the ExternalNeeds directory so you only have to 
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-```python3 DVGfinder.py -fq fastq_file [-r virus_reference] [-m margin] [-n number_processes]```
+```python3 DVGfinder_v2.py -fq fastq_file [-r virus_reference] [-m margin] [-n number_processes]```
 
 <!-- TUTORIAL -->
 
