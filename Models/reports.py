@@ -26,7 +26,7 @@ from Models import visualization
 # -----------------------------------------------------------------------------
 # CREATION OF FINAL TABLES
 # -----------------------------------------------------------------------------
-def create_table_all(df):
+def create_table_all(df, case):
     """
     Selecciona la información que se mostrará en la tabla completa de eventos 
     detectados
@@ -38,10 +38,26 @@ def create_table_all(df):
         df_all_show (pd.DataFrame)  Tabla con la selección de variables a 
                                     mostrar como informe
     """
+    # Variables a mostrar según el caso de uso
+    # caso 1: 
     selected_features = ['cID_DI', 'BP', 'RI', 'sense', 'DVG_type', 'length_dvg',
         'read_counts_virema', 'pBP_virema', 'pRI_virema' ,'rpht_virema',
         'read_counts_ditector','pBP_ditector', 'pRI_ditector', 'rpht_ditector']
-    df_all_show = df[selected_features]
+
+    # caso 2:
+    vir_selected = ['cID_DI', 'BP', 'RI', 'sense', 'DVG_type', 'length_dvg',
+    'read_counts_virema', 'pBP_virema', 'pRI_virema' ,'rpht_virema']
+
+    # caso 3:
+    dit_selected = ['cID_DI', 'BP', 'RI', 'sense', 'DVG_type', 'length_dvg',
+    'read_counts_ditector','pBP_ditector', 'pRI_ditector', 'rpht_ditector']
+    
+    if case == "case_1":
+        df_all_show = df[selected_features]
+    elif case == "case_2":
+        df_all_show = df[vir_selected]
+    elif case == "case_3":
+        df_all_show = df[dit_selected]
 
     return df_all_show
 
@@ -235,14 +251,16 @@ def generate_report(df, df_predicted_reals_show, sample_name, len_wt):
     # Generamos las tablas a mostrar
     # -------------------------------------------------------------------------
     ## Todos los eventos reduciendo a las variables de interés
-    df_all_show = create_table_all(df)
+    df_all_show = create_table_all(df, "case_1")
     # tabla anterior separada por programas
     df_all_virema, df_all_ditector = separate_df_all_by_program(df_all_show)
     ## Solo los eventos consenso (detectados por ambos programas)
     df_consensus = create_table_consensus(df_all_show)
     ## Eventos que pasan el filtro predictivo del modelo
-    # df_predicted_reals_show separada por programas
-    df_filtered_virema, df_filtered_ditector = separate_df_all_by_program(df_predicted_reals_show)
+    ## Si hay eventos filtrados los separamos por programa    
+    if not df_predicted_reals_show.empty:
+        df_filtered_virema, df_filtered_ditector = separate_df_all_by_program\
+                                                (df_predicted_reals_show)
 
     # Escribimos las tablas
     # -------------------------------------------------------------------------
@@ -257,70 +275,220 @@ def generate_report(df, df_predicted_reals_show, sample_name, len_wt):
     all_scatter_vir = visualization.scatter_color_by_DVGtype(df_all_virema, 
                 "read_counts_virema", 
                 title="Relationship between BP and RI coordinates in all " +  
-                "the DVGs detected by ViReMa",    
-                leader_coord1=69, leader_coord2=75)
+                "the DVGs detected by ViReMa-a",    
+                #leader_coord1=69, leader_coord2=75
+                )
     all_scatter_dit = visualization.scatter_color_by_DVGtype(df_all_ditector, 
                 "read_counts_ditector", 
                 title="Relationship between BP and RI coordinates in all " +  
                 "the DVGs detected by DI-tector",   
-                leader_coord1=69, leader_coord2=75)
+                #leader_coord1=69, leader_coord2=75
+                )
     ### histograms
     all_hist_vir = visualization.histogram_distribution_lengthDVG(df_all_virema,
                  "read_counts_virema", 
-                 title="Distribution of DVG lengths detected by ViReMa")
+                 title="Distribution of DVG lengths detected by ViReMa-a")
     all_hist_dit = visualization.histogram_distribution_lengthDVG(df_all_ditector,
                  "read_counts_ditector",
                  title="Distribution of DVG lengths detected by DI-tector")
     ### arc diagrams
     all_arcs_vir = visualization.arcs_diagram(df_all_virema, len_wt, 
-                title="Deletions detected by ViReMa")
+                title="Deletions detected by ViReMa-a")
     all_arcs_dit = visualization.arcs_diagram(df_all_ditector, len_wt,
                 title="Deletions detected by DI-tector")
 
-    ## CONSENSUS
+    ## CONSENSUS. Si hay eventos consenso generamos las visualizaciones
     ### scatterplots
-    consensus_scatter = visualization.scatter_color_by_DVGtype(df_consensus, 
-                "mean_read_counts", 
-                title="""
-                Relationship between BP and RI coordinates in consensus DVGs
-                """,    
-                leader_coord1=69, leader_coord2=75)
-    ### histograms
-    consensus_hist = visualization.histogram_distribution_lengthDVG(df_consensus,
-                 "mean_read_counts", 
-                 title="Distribution of DVG lengths in consensus DVGs")
-    ### arc diagrams
-    consensus_arcs = visualization.arcs_diagram(df_consensus, len_wt, 
-                title="Consensus deletions detected",
+    if not df_consensus.empty:
+        consensus = True
+        consensus_scatter = visualization.scatter_color_by_DVGtype(df_consensus, 
+                    "mean_read_counts", 
+                    title="""
+                    Relationship between BP and RI coordinates in consensus DVGs
+                    """,    
+                    leader_coord1=69, leader_coord2=75)
+        ### histograms
+        consensus_hist = visualization.histogram_distribution_lengthDVG(df_consensus,
+                    "mean_read_counts", 
+                    title="Distribution of DVG lengths in consensus DVGs")
+        ### arc diagrams
+        consensus_arcs = visualization.arcs_diagram(df_consensus, len_wt, 
+                    title="Consensus deletions detected",
                 )
+    else:
+        consensus = False
 
-    ## ML MODEL FILTER
+    ## ML MODEL FILTER. Si hay DVGs que pasan el filtro generamos las visuals
     ### scatterplots
-    ML_scatter_vir = visualization.scatter_color_by_DVGtype(df_filtered_virema, 
-                "read_counts_virema", 
-                title="Relationship between BP and RI coordinates in " +  
-                "DVGs detected by ViReMa filtered by ML",    
-                leader_coord1=69, leader_coord2=75)
-    ML_scatter_dit = visualization.scatter_color_by_DVGtype(df_filtered_ditector, 
-                "read_counts_ditector", 
-                title="Relationship between BP and RI coordinates in " +  
-                "the DVGs detected by DI-tector filtered by ML",   
-                leader_coord1=69, leader_coord2=75)
-    ### histograms
-    ML_hist_vir = visualization.histogram_distribution_lengthDVG(df_filtered_virema,
-                 "read_counts_virema", 
-                 title="Distribution of DVG lengths detected by ViReMa")
-    ML_hist_dit = visualization.histogram_distribution_lengthDVG(df_filtered_ditector,
-                 "read_counts_ditector",
-                 title="Distribution of DVG lengths detected by DI-tector")
-    ### arc diagrams
-    ML_arcs_vir = visualization.arcs_diagram(df_filtered_virema, len_wt, 
-                title="Deletions detected by ViReMa")
-    ML_arcs_dit = visualization.arcs_diagram(df_filtered_ditector, len_wt,
-                title="Deletions detected by DI-tector")
+    if not df_predicted_reals_show.empty:
+        predicted = True
+        ML_scatter_vir = visualization.scatter_color_by_DVGtype(df_filtered_virema, 
+                    "read_counts_virema", 
+                    title="Relationship between BP and RI coordinates in " +  
+                    "DVGs detected by ViReMa-a filtered by ML",    
+                    leader_coord1=69, leader_coord2=75)
+        ML_scatter_dit = visualization.scatter_color_by_DVGtype(df_filtered_ditector, 
+                    "read_counts_ditector", 
+                    title="Relationship between BP and RI coordinates in " +  
+                    "the DVGs detected by DI-tector filtered by ML",   
+                    leader_coord1=69, leader_coord2=75)
+        ### histograms
+        ML_hist_vir = visualization.histogram_distribution_lengthDVG(df_filtered_virema,
+                    "read_counts_virema", 
+                    title="Distribution of DVG lengths detected by ViReMa-a")
+        ML_hist_dit = visualization.histogram_distribution_lengthDVG(df_filtered_ditector,
+                    "read_counts_ditector",
+                    title="Distribution of DVG lengths detected by DI-tector")
+        ### arc diagrams
+        ML_arcs_vir = visualization.arcs_diagram(df_filtered_virema, len_wt, 
+                    title="Deletions detected by ViReMa-a")
+        ML_arcs_dit = visualization.arcs_diagram(df_filtered_ditector, len_wt,
+                    title="Deletions detected by DI-tector")
+    else: 
+        predicted = False
 
-    # Montamos el report
+    # Montamos el report en función del tipo de caso 1 en el que estemos
     # -------------------------------------------------------------------------
+    
+    if consensus and predicted:
+        # Informe completo: modos ALL, CONSENSUS & MLfiltered
+        r = dp.Report(
+        dp.Page(
+            # COMPLETE
+            #----------------------------------
+            title="All DVGs detected",        
+            blocks=[
+                dp.HTML(header_html(sample_name)),
+                dp.Text("## Complete table of DVG detected by ViReMa-a _OR_ DI-tector"),
+                dp.DataTable(df_all_show),
+                dp.Text("---"),
+                dp.Text("### Complete DVGs plots"),
+                ## scatterplots
+                dp.Select(blocks=[
+                    dp.Plot(all_scatter_vir, label= "ViReMa-a detection",
+                    caption="Scatterplot of RI~BP coordinates. " + 
+                    "Bubble size is relative to the  number of DVG readings " + 
+                    "detected by ViReMa-a."),
+                    dp.Plot(all_scatter_dit, label="DI-tector detection",
+                    caption="Scatterplot of RI~BP coordinates. " + 
+                    "Bubble size is relative to the number of DVG readings " + 
+                    "detected by DI-tector.")
+                ]),
+                ## histograms
+                dp.Select(blocks=[
+                    dp.Plot(all_hist_vir, label= "ViReMa-a detection",
+                    caption="Frequency histogram of the theoretical lengths of the DVGs."),
+                    dp.Plot(all_hist_dit, label="DI-tector detection",
+                    caption="Frequency histogram of the theoretical lengths of the DVGs.")
+                ]),
+                ## Arc diagrams
+                dp.Select(blocks=[
+                    dp.Plot(all_arcs_vir, label= "ViReMa-a detection",
+                    caption="Arc diagram of the deletions detected. The range " + 
+                    " between the two 'x' coordinates represent the deletioned " +
+                    " genome part."),
+                    dp.Plot(all_arcs_dit, label="DI-tector detection",
+                    caption="Arc diagram of the deletions detected. The range " + 
+                    " between the two 'x' coordinates represent the deletioned " +
+                    " genome part.")
+                ]),
+                dp.HTML(arcs_caption()),
+                dp.HTML(footer_html())
+                ]            
+            ),
+
+        dp.Page(
+            # CONSENSUS
+            #----------------------------------
+            title="DVG consensus selected",
+            blocks=[
+                dp.HTML(header_html(sample_name)),
+                dp.Text("## Consensus table of DVG detected by ViReMa-a _AND_ DI-tector"),
+                dp.DataTable(df_consensus),
+                dp.Text("---"),
+                dp.Text("### Consensus DVG plots"),
+                dp.Plot(consensus_scatter, 
+                    caption="Scatterplot of RI~BP coordinates. " + 
+                    "Bubble size is relative to the **mean** number of DVG readings " + 
+                    "detected by the programs."),
+                dp.Plot(consensus_hist,
+                caption="Frequency histogram of the theoretical lengths of the DVGs."),
+                dp.Plot(consensus_arcs,
+                caption="Arc diagram of the deletions detected. The range " + 
+                    " between the two x coordinates represent the deletioned " +
+                    " genome part."),
+                dp.HTML(arcs_caption()),
+                dp.HTML(footer_html())
+                ]
+            ),
+        dp.Page(
+            # FILTERED ML
+            #----------------------------------
+            title="DVG ML filtered",
+            blocks=[
+                dp.HTML(header_html(sample_name)),
+                dp.Text("## Table of DVG predicted as reals with the DVGfinder-MLmodel"),
+                dp.DataTable(df_predicted_reals_show),
+                dp.Text("---"),
+                dp.Text("### ML filtered DVG plots"),
+                ## scatterplots
+                dp.Select(blocks=[
+                    dp.Plot(ML_scatter_vir, label= "ViReMa-a detection",
+                    caption="Scatterplot of RI~BP coordinates. " + 
+                    "Bubble size is relative to the  number of DVG readings " + 
+                    "detected by ViReMa-a."),
+                    dp.Plot(ML_scatter_dit, label="DI-tector detection",
+                    caption="Scatterplot of RI~BP coordinates. " + 
+                    "Bubble size is relative to the number of DVG readings " + 
+                    "detected by DI-tector."),
+                ]),
+                ## histograms
+                dp.Select(blocks=[
+                    dp.Plot(ML_hist_vir, label= "ViReMa-a detection",
+                    caption="Frequency histogram of the theoretical lengths of the DVGs."),
+                    dp.Plot(ML_hist_dit, label="DI-tector detection",
+                    caption="Frequency histogram of the theoretical lengths of the DVGs.")
+                ]),
+                ## Arc diagrams
+                dp.Select(blocks=[
+                    dp.Plot(ML_arcs_vir, label= "ViReMa-a detection",
+                    caption="Arc diagram of the deletions detected. The range " + 
+                    " between the two x coordinates represent the deletioned " +
+                    " genome part."),
+                    dp.Plot(ML_arcs_dit, label="DI-tector detection",
+                    caption="Arc diagram of the deletions detected. The range " + 
+                    " between the two x coordinates represent the deletioned " +
+                    " genome part.")]
+                ),
+                dp.HTML(arcs_caption()),
+                dp.HTML(footer_html())
+            ])
+        )
+    elif consensus and not predicted:
+        r = report_AllConsensus(sample_name, 
+                        df_all_show, all_scatter_vir, all_scatter_dit,
+                        all_hist_vir, all_hist_dit, all_arcs_vir, all_arcs_dit,
+                        df_consensus, consensus_scatter, consensus_hist,
+                        consensus_arcs)
+    elif not consensus and predicted:
+        r = report_AllConsensus(sample_name, 
+                df_all_show, all_scatter_vir, all_scatter_dit,
+                all_hist_vir, all_hist_dit, all_arcs_vir, all_arcs_dit,
+                df_predicted_reals_show, ML_scatter_vir, ML_scatter_dit, 
+                ML_hist_vir, ML_hist_dit, ML_arcs_vir, ML_arcs_dit)
+    else:
+        r = report_onlyAll(sample_name, 
+                df_all_show, all_scatter_vir, all_scatter_dit,
+                all_hist_vir, all_hist_dit, all_arcs_vir, all_arcs_dit)
+
+    r.save(path=path_html, open=True)
+
+
+def report_AllConsensus(sample_name, 
+                        df_all_show, all_scatter_vir, all_scatter_dit,
+                        all_hist_vir, all_hist_dit, all_arcs_vir, all_arcs_dit,
+                        df_consensus, consensus_scatter, consensus_hist,
+                        consensus_arcs):
     r = dp.Report(
     dp.Page(
         # COMPLETE
@@ -328,16 +496,16 @@ def generate_report(df, df_predicted_reals_show, sample_name, len_wt):
         title="All DVGs detected",        
         blocks=[
             dp.HTML(header_html(sample_name)),
-            dp.Text("## Complete table of DVG detected by ViReMa _OR_ DI-tector"),
+            dp.Text("## Complete table of DVG detected by ViReMa-a _OR_ DI-tector"),
             dp.DataTable(df_all_show),
             dp.Text("---"),
             dp.Text("### Complete DVGs plots"),
             ## scatterplots
             dp.Select(blocks=[
-                dp.Plot(all_scatter_vir, label= "ViReMa detection",
+                dp.Plot(all_scatter_vir, label= "ViReMa-a detection",
                 caption="Scatterplot of RI~BP coordinates. " + 
                 "Bubble size is relative to the  number of DVG readings " + 
-                "detected by ViReMa."),
+                "detected by ViReMa-a."),
                 dp.Plot(all_scatter_dit, label="DI-tector detection",
                 caption="Scatterplot of RI~BP coordinates. " + 
                 "Bubble size is relative to the number of DVG readings " + 
@@ -345,14 +513,14 @@ def generate_report(df, df_predicted_reals_show, sample_name, len_wt):
             ]),
             ## histograms
             dp.Select(blocks=[
-                dp.Plot(all_hist_vir, label= "ViReMa detection",
+                dp.Plot(all_hist_vir, label= "ViReMa-a detection",
                 caption="Frequency histogram of the theoretical lengths of the DVGs."),
                 dp.Plot(all_hist_dit, label="DI-tector detection",
                 caption="Frequency histogram of the theoretical lengths of the DVGs.")
             ]),
             ## Arc diagrams
             dp.Select(blocks=[
-                dp.Plot(all_arcs_vir, label= "ViReMa detection",
+                dp.Plot(all_arcs_vir, label= "ViReMa-a detection",
                 caption="Arc diagram of the deletions detected. The range " + 
                 " between the two 'x' coordinates represent the deletioned " +
                 " genome part."),
@@ -369,10 +537,9 @@ def generate_report(df, df_predicted_reals_show, sample_name, len_wt):
         # CONSENSUS
         #----------------------------------
         title="DVG consensus selected",
-    #dp.Plot(plotly_chart),
         blocks=[
             dp.HTML(header_html(sample_name)),
-            dp.Text("## Consensus table of DVG detected by ViReMa _AND_ DI-tector"),
+            dp.Text("## Consensus table of DVG detected by ViReMa-a _AND_ DI-tector"),
             dp.DataTable(df_consensus),
             dp.Text("---"),
             dp.Text("### Consensus DVG plots"),
@@ -389,12 +556,63 @@ def generate_report(df, df_predicted_reals_show, sample_name, len_wt):
             dp.HTML(arcs_caption()),
             dp.HTML(footer_html())
             ]
-        ),
+        )
+    )
+    return r
+
+def report_AllML(sample_name, 
+                df_all_show, all_scatter_vir, all_scatter_dit,
+                all_hist_vir, all_hist_dit, all_arcs_vir, all_arcs_dit,
+                df_predicted_reals_show, ML_scatter_vir, ML_scatter_dit, 
+                ML_hist_vir, ML_hist_dit, ML_arcs_vir, ML_arcs_dit):
+    r = dp.Report(
     dp.Page(
+        # COMPLETE
+        #----------------------------------
+        title="All DVGs detected",        
+        blocks=[
+            dp.HTML(header_html(sample_name)),
+            dp.Text("## Complete table of DVG detected by ViReMa-a _OR_ DI-tector"),
+            dp.DataTable(df_all_show),
+            dp.Text("---"),
+            dp.Text("### Complete DVGs plots"),
+            ## scatterplots
+            dp.Select(blocks=[
+                dp.Plot(all_scatter_vir, label= "ViReMa-a detection",
+                caption="Scatterplot of RI~BP coordinates. " + 
+                "Bubble size is relative to the  number of DVG readings " + 
+                "detected by ViReMa-a."),
+                dp.Plot(all_scatter_dit, label="DI-tector detection",
+                caption="Scatterplot of RI~BP coordinates. " + 
+                "Bubble size is relative to the number of DVG readings " + 
+                "detected by DI-tector.")
+            ]),
+            ## histograms
+            dp.Select(blocks=[
+                dp.Plot(all_hist_vir, label= "ViReMa-a detection",
+                caption="Frequency histogram of the theoretical lengths of the DVGs."),
+                dp.Plot(all_hist_dit, label="DI-tector detection",
+                caption="Frequency histogram of the theoretical lengths of the DVGs.")
+            ]),
+            ## Arc diagrams
+            dp.Select(blocks=[
+                dp.Plot(all_arcs_vir, label= "ViReMa-a detection",
+                caption="Arc diagram of the deletions detected. The range " + 
+                " between the two 'x' coordinates represent the deletioned " +
+                " genome part."),
+                dp.Plot(all_arcs_dit, label="DI-tector detection",
+                caption="Arc diagram of the deletions detected. The range " + 
+                " between the two 'x' coordinates represent the deletioned " +
+                " genome part.")
+            ]),
+            dp.HTML(arcs_caption()),
+            dp.HTML(footer_html())
+            ]            
+        ),
+        dp.Page(
         # FILTERED ML
         #----------------------------------
         title="DVG ML filtered",
-    #dp.Plot(plotly_chart),
         blocks=[
             dp.HTML(header_html(sample_name)),
             dp.Text("## Table of DVG predicted as reals with the DVGfinder-MLmodel"),
@@ -403,10 +621,10 @@ def generate_report(df, df_predicted_reals_show, sample_name, len_wt):
             dp.Text("### ML filtered DVG plots"),
             ## scatterplots
             dp.Select(blocks=[
-                dp.Plot(ML_scatter_vir, label= "ViReMa detection",
+                dp.Plot(ML_scatter_vir, label= "ViReMa-a detection",
                 caption="Scatterplot of RI~BP coordinates. " + 
                 "Bubble size is relative to the  number of DVG readings " + 
-                "detected by ViReMa."),
+                "detected by ViReMa-a."),
                 dp.Plot(ML_scatter_dit, label="DI-tector detection",
                 caption="Scatterplot of RI~BP coordinates. " + 
                 "Bubble size is relative to the number of DVG readings " + 
@@ -414,14 +632,14 @@ def generate_report(df, df_predicted_reals_show, sample_name, len_wt):
             ]),
             ## histograms
             dp.Select(blocks=[
-                dp.Plot(ML_hist_vir, label= "ViReMa detection",
+                dp.Plot(ML_hist_vir, label= "ViReMa-a detection",
                 caption="Frequency histogram of the theoretical lengths of the DVGs."),
                 dp.Plot(ML_hist_dit, label="DI-tector detection",
                 caption="Frequency histogram of the theoretical lengths of the DVGs.")
             ]),
             ## Arc diagrams
             dp.Select(blocks=[
-                dp.Plot(ML_arcs_vir, label= "ViReMa detection",
+                dp.Plot(ML_arcs_vir, label= "ViReMa-a detection",
                 caption="Arc diagram of the deletions detected. The range " + 
                 " between the two x coordinates represent the deletioned " +
                 " genome part."),
@@ -433,6 +651,147 @@ def generate_report(df, df_predicted_reals_show, sample_name, len_wt):
             dp.HTML(arcs_caption()),
             dp.HTML(footer_html())
         ])
+    )
+    return r
+
+def report_onlyAll(sample_name, 
+                df_all_show, all_scatter_vir, all_scatter_dit,
+                all_hist_vir, all_hist_dit, all_arcs_vir, all_arcs_dit):
+    r = dp.Report(
+    dp.Page(
+        # COMPLETE
+        #----------------------------------
+        title="All DVGs detected",        
+        blocks=[
+            dp.HTML(header_html(sample_name)),
+            dp.Text("## Complete table of DVG detected by ViReMa-a _OR_ DI-tector"),
+            dp.DataTable(df_all_show),
+            dp.Text("---"),
+            dp.Text("### Complete DVGs plots"),
+            ## scatterplots
+            dp.Select(blocks=[
+                dp.Plot(all_scatter_vir, label= "ViReMa-a detection",
+                caption="Scatterplot of RI~BP coordinates. " + 
+                "Bubble size is relative to the  number of DVG readings " + 
+                "detected by ViReMa-a."),
+                dp.Plot(all_scatter_dit, label="DI-tector detection",
+                caption="Scatterplot of RI~BP coordinates. " + 
+                "Bubble size is relative to the number of DVG readings " + 
+                "detected by DI-tector.")
+            ]),
+            ## histograms
+            dp.Select(blocks=[
+                dp.Plot(all_hist_vir, label= "ViReMa-a detection",
+                caption="Frequency histogram of the theoretical lengths of the DVGs."),
+                dp.Plot(all_hist_dit, label="DI-tector detection",
+                caption="Frequency histogram of the theoretical lengths of the DVGs.")
+            ]),
+            ## Arc diagrams
+            dp.Select(blocks=[
+                dp.Plot(all_arcs_vir, label= "ViReMa-a detection",
+                caption="Arc diagram of the deletions detected. The range " + 
+                " between the two 'x' coordinates represent the deletioned " +
+                " genome part."),
+                dp.Plot(all_arcs_dit, label="DI-tector detection",
+                caption="Arc diagram of the deletions detected. The range " + 
+                " between the two 'x' coordinates represent the deletioned " +
+                " genome part.")
+            ]),
+            dp.HTML(arcs_caption()),
+            dp.HTML(footer_html())
+            ]            
+        )
+    )
+    return r
+
+def generate_incomplete_report(df, sample_name, len_wt, case):
+    """
+    Función completa para generar el informe HTML para los casos incompletos,
+    ie, casos en los que solo un programa haya encontrado DVGs en los datos.
+    - LLama a las funciones necesarias para crear la tabla de DVGs a mostrar
+    y las visualizaciones, y 
+    - Monta el resultado en un fichero HTML (utiliza la librería datapane)
+    que se abre automáticamente en el navegador establecido por defecto. Guarda
+    el HTML y las tablas de los tres modos (.csv) en el directorio 
+    'FinalReports/{sample_name}/'
+
+    Args:
+        df          (pd.DataFrame)  Tabla completa con todos los eventos 
+                                detectados con el módulo metabuscador
+        sample_name     (str)   Nombre de la muestra.
+        len_wt          (int)   Longitud del genoma de referencia
+        case    (str)   Caso de uso. 
+                        case_2: solo output de ViReMa-a
+                        case_3: solo output de DI-tector
+    
+    """
+    # Para extraer el nombre del programa según lo necesitemos
+    case_dict = {"case_2" : ["ViReMa-a", "virema"], 
+                "case_3" : ["DI-tector", "ditector"]}
+    
+    # file to save
+    paths_csv = 'FinalReports' + "/" + sample_name + "/" + \
+                sample_name
+    path_html = 'FinalReports' + "/" + sample_name + "/" + \
+                sample_name + "_report.html"
+    # Generamos las tablas a mostrar
+    # -------------------------------------------------------------------------
+    ## Todos los eventos reduciendo a las variables de interés
+    df_all_show = create_table_all(df, case)
+    
+
+    # Escribimos la tabla
+    # -------------------------------------------------------------------------
+    df_all_show.to_csv(paths_csv + "_{}.csv".format(case_dict[case][1]), index=False)
+    
+
+    # Generamos las visualizaciones
+    # -------------------------------------------------------------------------
+    ## COMPLETE
+    ### scatterplots
+    scatter_plot = visualization.scatter_color_by_DVGtype(df_all_show, 
+                "read_counts_{}".format(case_dict[case][1]), 
+                title="Relationship between BP and RI coordinates in all " +  
+                "the DVGs detected by {}".format(case_dict[case][0]))   
+    
+    ### histograms
+    hist_plot = visualization.histogram_distribution_lengthDVG(df_all_show,
+                 "read_counts_{}".format(case_dict[case][1]), 
+                 title="Distribution of DVG lengths detected by {}"\
+                     .format(case_dict[case][0]))
+    
+    ### arc diagrams
+    arcs_plot = visualization.arcs_diagram(df_all_show, len_wt, 
+                title="Deletions detected by {}".format(case_dict[case][0]))
+    
+
+    # Montamos el report
+    # -------------------------------------------------------------------------
+    r = dp.Report(
+    dp.Page(
+        # CONSENSUS
+        #----------------------------------
+        title="DVG detected by {}".format(case_dict[case][0]),
+        blocks=[
+            dp.HTML(header_html(sample_name)),
+            dp.Text("## Table of DVGs detected by {}".format(case_dict[case][0])),
+            dp.DataTable(df_all_show),
+            dp.Text("---"),
+            dp.Text("### DVG plots"),
+            dp.Plot(scatter_plot, 
+                caption="Scatterplot of RI~BP coordinates. " + 
+                "Bubble size is relative to the number of DVG readings " + 
+                "detected by {}.".format(case_dict[case][0])),
+            dp.Plot(hist_plot,
+            caption="Frequency histogram of the theoretical lengths of the DVGs."),
+            dp.Plot(arcs_plot,
+            caption="Arc diagram of the deletions detected. The range " + 
+                " between the two x coordinates represent the deletioned " +
+                " genome part."),
+            dp.HTML(arcs_caption()),
+            dp.HTML(footer_html())
+            ]
+        )
     )
     r.save(path=path_html, open=True)
 
@@ -448,7 +807,7 @@ def header_html(sample_name):
             100% {color: #EF4444;}
         }
         #container {
-            background: #1F2937;
+            background: #303844;
             padding: 1.2em;
         }
         img {
@@ -468,7 +827,7 @@ def header_html(sample_name):
         }
     </style>
     <div id="container">
-      <img src="http://147.156.206.144/appweb/LOGODVGfinder_simple_white.png" width=250>
+      <img src="http://147.156.206.144/appweb/LOGODVGfinder_simple_white.png" width=300>
       <h2> Sample """ + sample_name + """ </h2>
     </div>
     </html>"""
@@ -478,9 +837,9 @@ def header_html(sample_name):
 def footer_html():
     footer = """
     <footer>
-        <style type='text/css'
+        <style type='text/css'>
             #container {
-                background: #1F2937;
+                background: #303844;
                 padding: 0.3em;
                 text-align: right;
             }
@@ -503,7 +862,7 @@ def footer_html():
         </style>
         <div id="container">
         <h1> María José Olmo-Uceda, PhD student</h1>
-        <a href = "mailto: maolu@alumni.uv.es"> maolu@alumni.uv.es</a>
+        <a href = "mailto: mariajose.olmo@csic.es"> mariajose.olmo@csic.es</a>
         <h2> EvolSysVir Group, I2SysBio (CSIC-UV) <\h2>
         </div>
     </footer>"""

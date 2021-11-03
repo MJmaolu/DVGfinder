@@ -44,7 +44,9 @@ def read_arguments():
             """Complete path to the fastq file we want to process.
             [Default is SD2_0h]""")
     parser.add_argument('-r', '--virus_reference', 
-            help="Genome reference. [Default is SARSCoV2_Wuhan1]")
+            help="""Genome reference in fasta format. Needs the indexed genome
+            (for bwa and for bowtie) in the same directory.
+            [Default is SARSCoV2_Wuhan1.fasta]""")
     parser.add_argument('-m', '--margin', 
             help=""" Number of positions to take in account for the average
             post and pre coordinate metrics. [Default is 5].""")
@@ -117,7 +119,7 @@ def run_virema_v023(fq, sample_name, virus_ref_no_extension, n_processes):
                     '--Output_Dir', out_dir_virema, '--P', str(n_processes), 
                     ref, fq, sam_bt])
 
-def run_ditector(fq, sample_name, virus_ref, n_processes):
+def run_ditector(fq, sample_name, virus_ref_path, n_processes):
     """
     Lanza ViReMa_v0.23 (funciona con python3).
     Genera el output propio de este programa en la carpeta: 
@@ -137,12 +139,12 @@ def run_ditector(fq, sample_name, virus_ref, n_processes):
 
     # Creamos las variables necesarias
     ## Guardamos el nombre de la muestra
-    sample_name = os.path.basename(fq).split(".")[-2]
+    #sample_name = os.path.basename(fq).split(".")[-2]
     ## Rutas para el programa y la referencia
     ditector = "ExternalNeeds/thirdPrograms/DI-tector_06.py"
-    ref = "ExternalNeeds/references/" + virus_ref
+    ref = virus_ref_path
     out_dir_ditector = "Outputs/ditector/" + sample_name 
-    sam_bm = sample_name + "_bm.sam"
+    #sam_bm = sample_name + "_bm.sam"
 
     # Lanzamos proceso de búsqueda guardando alineamientos intermedios
     subprocess.run(['python3', ditector, '-n', '1', '-o', out_dir_ditector,
@@ -323,14 +325,15 @@ def write_depth_file(sample_name):
 
         os.system("samtools depth -a {} > {}".format(alignment_file, depth_file)) 
 
-def extract_recombination_events_virema(sample_name, ref="NC_045512.2"):
+def extract_recombination_events_virema(sample_name, ref):
     """
     Genera un fichero tsv con la información: BP, RI, read_counts_virema, sense
     Para ello parsea el fichero generado por ViReMa 
                 '{sample_name}_Virus_Recombination_Results.txt'
     Args: 
         sample_name (str)   [in]    Nombre de la muestra
-        ref (str)   [in]    Identificador del genoma de referencia
+        ref (str)   [in]    Identificador del genoma de referencia. Extraemos
+                            del id del fasta de referencia
 
     Returns:
         {sample_name}_from_raw_virema   (file)  tsv con la información de cada 
@@ -366,7 +369,65 @@ def extract_recombination_events_ditector(sample_name):
     # extracción de la información
     os.system("Models/extract_recombination_events_ditector.sh {} {}".format\
         (sample_name, recombinations_file))
+
+def which_program_found(sample_name):
+    """
+    Interroga los ficheros donde se extraen los eventos detectados por cada
+    programa para establecer con los resultados de cuál continuar con el flujo
+    de trabajo
+
+    Args: 
+        sample_name (str)
+    Return:
+        bool_vir    (bool)  ¿Virema ha encontrado DVGs? True/False
+        bool_dit    (bool)  ¿Ditector ha encontrado DVGs? True/False
+    """
+
+    vir = "Outputs/{}_from_raw_virema.tsv".format(sample_name)
+    dit = "Outputs/{}_from_raw_ditector.tsv".format(sample_name)
+
+    if os.path.getsize(vir) == 0:
+        bool_vir = False
+    else:
+        bool_vir = True
     
+    if os.path.getsize(dit) == 0:
+        bool_dit = False
+    else:
+        bool_dit = True
+
+    return bool_vir, bool_dit
+
+def define_case(bool_vir=bool, bool_dit=bool):
+    """
+    Define el caso de uso en el que está la búsqueda. Existen 4 posibilidades
+    en función de qué programas hayan encontrado DVGs en la muestra:
+        case_1 = Virema-a + DI-tector
+        case_2 = Virema-a
+        case_3 = DI-tetor
+        case_4 = None
+    En función del caso de uso, el programa determinará el consecuente flujo de 
+    trabajo.
+
+    Args:
+        bool_vir    (bool)  ¿Virema ha encontrado DVGs? True/False
+        bool_dit    (bool)  ¿Ditector ha encontrado DVGs? True/False
+
+    Return:
+        case    (str)   Caso de uso en el que se encuentra el programa
+    """
+    if bool_vir:
+        if bool_dit:
+            case = "case_1"
+        else: 
+            case = "case_2"
+    else:
+        if bool_dit:
+            case = "case_3"
+        else:
+            case = "case_4"
+
+    return case
 
 def asign_dvg_type(sense, BP, RI):
     """
@@ -493,6 +554,7 @@ def create_cIDDI(sense, ID_DI):
 
 def add_sense_and_IDs(sample_name):
     """
+    Para el output de ViReMa-a
     Lee el fichero {sample_name}_from_raw_virema.tsv, lo convierte en un 
     pd.DataFrame, añade el nombre de las columnas existente y le añade:
      'DVG_type', 'ID_DI' y 'cID_DI'. Por último escribe el df en un nuevo 
@@ -519,6 +581,7 @@ def add_sense_and_IDs(sample_name):
 
 def add_dvgtype_and_IDs(sample_name):
     """
+    Para el output de DI-tector
     Lee el fichero {sample_name}_from_raw_ditector.tsv, lo convierte en un 
     pd.DataFrame, añade el nombre de las columnas existente y le añade:
      'sense', 'ID_DI' y 'cID_DI'. Por último escribe el df en un nuevo 
@@ -544,13 +607,16 @@ def add_dvgtype_and_IDs(sample_name):
     df.to_csv(output_file, sep="\t", index=False)
 
 
-def lists_dvgs(sample_name):
+def lists_dvgs(sample_name, bool_vir, bool_dit):
     """
     Extrae todos los dvgs detectados en la muestra (sample_name). 
     Parsea los
 
     Args:
         sample_name (str)   [in]    Nombre de la muestra
+        bool_vir    (bool)  ¿Virema ha encontrado DVGs? True/False
+        bool_dit    (bool)  ¿Ditector ha encontrado DVGs? True/False    
+    
     Returns:
         dvg_list    (list)  [out]   Lista con el total de cID_DI no repetidos
                                  detectados con todos los programas
@@ -561,22 +627,25 @@ def lists_dvgs(sample_name):
     infile_vir ="Outputs/" + sample_name + "_from_raw_virema_wIDs.tsv"
     infile_dit = "Outputs/" + sample_name + "_from_raw_ditector_wIDs.tsv"
 
-    df1 = pd.read_csv(infile_vir, header=0, sep="\t")
-    df2 = pd.read_csv(infile_dit, header=0, sep="\t")
+    dvg_list_vir = list()
+    dvg_list_dit = list()
 
-    # listas individuales
-    dvg_list_vir = list(df1['cID_DI'])
-    dvg_list_dit = list(df2['cID_DI'])
-
+    if bool_vir:
+        df1 = pd.read_csv(infile_vir, header=0, sep="\t")
+        dvg_list_vir = list(df1['cID_DI'])
+    if bool_dit:
+        df2 = pd.read_csv(infile_dit, header=0, sep="\t")
+        dvg_list_dit = list(df2['cID_DI'])
+        
     # Todos los DVGs, sin duplicaciones 
-    dvg_list = sorted(list(set(df1['cID_DI']) | set(df2['cID_DI'])))
+    dvg_list = sorted(set(dvg_list_vir) | set(dvg_list_dit))
 
     return dvg_list, dvg_list_vir, dvg_list_dit
 
 # 1.3: GENERACIÓN DE LA TABLA RESUMEN CON LAS MÉTRICAS
 # -----------------------------------------------------------------------------
 
-def create_unificate_dvg_table(sample_name):
+def create_unificate_dvg_table(sample_name, bool_vir, bool_dit):
     """
     Generamos el df unificado con la información de salida de los programas
     """
@@ -584,7 +653,8 @@ def create_unificate_dvg_table(sample_name):
     output_file = "Outputs/" + sample_name + "_unificated_table.csv"
 
     # generamos la lista completa de dvgs
-    dvg_list, dvg_list_vir, dvg_list_dit = lists_dvgs(sample_name)
+    dvg_list, dvg_list_vir, dvg_list_dit = lists_dvgs(sample_name, 
+                                                    bool_vir, bool_dit)
     #print(dvg_list, dvg_list_vir, dvg_list_dit)
     
     df = pd.DataFrame()
@@ -594,11 +664,12 @@ def create_unificate_dvg_table(sample_name):
     df[['DVG_type']] = df.apply(lambda row : 
                              asign_dvg_type(row['sense'], row['BP'], 
                              row['RI']), axis=1)
-
-    df[['read_counts_virema']] = df.apply(lambda row : 
+    if bool_vir:
+        df[['read_counts_virema']] = df.apply(lambda row : 
                             extract_counts_virema(row['cID_DI'], sample_name, 
                             dvg_list_vir), axis=1)
-    df[['read_counts_ditector']] = df.apply(lambda row : 
+    if bool_dit:
+        df[['read_counts_ditector']] = df.apply(lambda row : 
                             extract_counts_ditector(row['cID_DI'], sample_name,
                              dvg_list_dit), axis=1)
     df.to_csv(output_file, index=False)
@@ -644,7 +715,7 @@ def extract_counts_ditector(cID_DI, sample_name, dvg_list_dit):
 #–---------------------    
 # DEPTHS
 #–--------------------- 
-def extract_depth_from_coordinate(coordinate, sample_name, depth_txt):
+def extract_depth_from_coordinate(coordinate, sample_name, depth_txt, len_wt):
     """
     Obtenemos la profundidad de la posición (base 1) establecida como coordenada.
     Se tiene en cuenta que el fichero pueda estar vacío, en este caso devolverá
@@ -660,7 +731,7 @@ def extract_depth_from_coordinate(coordinate, sample_name, depth_txt):
     """
     depth_file = "Outputs/alignments/" + sample_name + "/" + depth_txt
 
-    if (os.path.getsize(depth_file) != 0 and 1 < coordinate < 29903):
+    if (os.path.getsize(depth_file) != 0 and 1 < coordinate < len_wt):
         header_names =  ("chr", "position", "depth")
         depth = pd.read_csv(depth_file, sep="\t", header=None, \
             names=header_names)
@@ -671,11 +742,10 @@ def extract_depth_from_coordinate(coordinate, sample_name, depth_txt):
 
     return depth_value
 
-def write_depth_coordinate(sample_name, df):
+def write_depth_coordinate(sample_name, df, len_wt):
     """
     Añade las columnas depth_BP y depth_RI de:
-    los 3 tipos de alineamiento (completo, mapped y soloH) generados con
-    cada algoritmo (bt2 y bwa mem)
+    los alineamientos mapped y soloH generados con cada algoritmo (bt2 y bwa mem)
 
     Args:
         sample_name (str)   [in]    Nombre de la muestra  
@@ -694,8 +764,6 @@ def write_depth_coordinate(sample_name, df):
     bt2_H = sample_name + "_bt2_sorted_H_depth.txt"
     bm_H = sample_name + "_bm_sorted_H_depth.txt"
 
-    
-
     #df = pd.read_csv("Outputs/unificated_table.csv", header=0)
     
     # Añadimos columnas con información sobre la profundidad
@@ -709,16 +777,16 @@ def write_depth_coordinate(sample_name, df):
     """
     df[['depthBP_bt2_mapped']] = df.apply(lambda row : 
                         extract_depth_from_coordinate(row['BP'],  sample_name,
-                                                    bt2_mapped), axis=1)
+                                                    bt2_mapped, len_wt), axis=1)
     df[['depthRI_bt2_mapped']] = df.apply(lambda row : 
                         extract_depth_from_coordinate(row['RI'],  sample_name,
-                                                    bt2_mapped), axis=1)
+                                                    bt2_mapped, len_wt), axis=1)
     df[['depthBP_bt2_H']] = df.apply(lambda row : 
                         extract_depth_from_coordinate(row['BP'],  sample_name,
-                                                    bt2_H), axis=1)
+                                                    bt2_H, len_wt), axis=1)
     df[['depthRI_bt2_H']] = df.apply(lambda row : 
                         extract_depth_from_coordinate(row['RI'],  sample_name,
-                                                    bt2_H), axis=1)
+                                                    bt2_H, len_wt), axis=1)
     """
     df[['depthBP_bm']] = df.apply(lambda row : 
                         extract_depth_from_coordinate(row['BP'],  sample_name,
@@ -729,16 +797,16 @@ def write_depth_coordinate(sample_name, df):
     """
     df[['depthBP_bm_mapped']] = df.apply(lambda row : 
                         extract_depth_from_coordinate(row['BP'],  sample_name,
-                                                    bm_mapped), axis=1)
+                                                    bm_mapped, len_wt), axis=1)
     df[['depthRI_bm_mapped']] = df.apply(lambda row : 
                         extract_depth_from_coordinate(row['RI'],  sample_name,
-                                                    bm_mapped), axis=1)
+                                                    bm_mapped, len_wt), axis=1)
     df[['depthBP_bm_H']] = df.apply(lambda row : 
                         extract_depth_from_coordinate(row['BP'],  sample_name,
-                                                    bm_H), axis=1)
+                                                    bm_H, len_wt), axis=1)
     df[['depthRI_bm_H']] = df.apply(lambda row :  
                         extract_depth_from_coordinate(row['RI'],  sample_name,
-                                                    bm_H), axis=1)
+                                                    bm_H, len_wt), axis=1)
     # write
     #df.to_csv("Outputs/unificate__temp_table_wDepths.csv", index=False)
 
@@ -976,7 +1044,7 @@ def proportion_coordinate(read_counts, depth_coordinate_mapped):
     return ratio
 
 
-def write_proportion_reads(df):
+def write_proportion_reads(df, bool_vir, bool_dit):
     """
     Añade los ratios pBP y pRI de cada dvg en el pd.DataFrame df
 
@@ -991,20 +1059,22 @@ def write_proportion_reads(df):
     #df = pd.read_csv("Outputs/unificate_table_wDepths.csv", header=0)
 
     # Proporciones según lo detectado por ViReMa
-    df[['pBP_virema']] = df.apply(lambda row : 
-        proportion_coordinate(row['read_counts_virema'],
-        row['depthBP_bt2_mapped']), axis=1)
-    df[['pRI_virema']] = df.apply(lambda row : 
-        proportion_coordinate(row['read_counts_virema'],
-        row['depthRI_bt2_mapped']), axis=1)
+    if bool_vir:
+        df[['pBP_virema']] = df.apply(lambda row : 
+            proportion_coordinate(row['read_counts_virema'],
+            row['depthBP_bt2_mapped']), axis=1)
+        df[['pRI_virema']] = df.apply(lambda row : 
+            proportion_coordinate(row['read_counts_virema'],
+            row['depthRI_bt2_mapped']), axis=1)
 
     # Proporciones según lo detectado por DItector
-    df[['pBP_ditector']] = df.apply(lambda row : 
-        proportion_coordinate(row['read_counts_ditector'],
-        row['depthBP_bm_mapped']), axis=1)
-    df[['pRI_ditector']] = df.apply(lambda row : 
-        proportion_coordinate(row['read_counts_virema'],
-        row['depthRI_bm_mapped']), axis=1)
+    if bool_dit:
+        df[['pBP_ditector']] = df.apply(lambda row : 
+            proportion_coordinate(row['read_counts_ditector'],
+            row['depthBP_bm_mapped']), axis=1)
+        df[['pRI_ditector']] = df.apply(lambda row : 
+            proportion_coordinate(row['read_counts_virema'],
+            row['depthRI_bm_mapped']), axis=1)
     #df.to_csv("Outputs/unificate_temp_table_wProportions.csv", index=False)
 
     return df
@@ -1161,8 +1231,8 @@ def read_stats_alignments(df_stats):
     return numreads 
     #,covbases, coverage, meandepth, meanbaseq, meanmapq
 
-
-def add_stats_alignment(df, alignment_stats):
+# Hay que contar con que puede estar vacío
+def add_stats_alignment(df, alignment_stats): 
     """
     Añade al df los valores de estádisticos extraídos con `samtools coverage` 
     del alineamiento
@@ -1181,9 +1251,16 @@ def add_stats_alignment(df, alignment_stats):
     #df = pd.read_csv("Outputs/unificated_table.csv", header=0)
     #file_stats = "Outputs/alignments/" + alignment_stats
 
-    # cargamos el df con los datos sobre los estadísticos
-    df_stats = pd.read_csv(alignment_stats, header=0, sep="\t")
-
+    # Comprobamos que no está vacío
+    if os.path.getsize(alignment_stats) != 0:
+        # cargamos el df con los datos sobre los estadísticos
+        df_stats = pd.read_csv(alignment_stats, header=0, sep="\t")
+        numreads = read_stats_alignments(df_stats)
+        #, covbases, coverage, meandepth, meanbaseq, meanmapq = \
+        #    read_stats_alignments(df_stats)
+    else:
+        numreads = 0
+    
     # asignar el tail_name que añadir en las columnas
     ## algoritm
     if "bt2" in alignment_stats:
@@ -1197,10 +1274,6 @@ def add_stats_alignment(df, alignment_stats):
         tail = "_mapped"
     else:
         tail = "_all" 
-
-    numreads = read_stats_alignments(df_stats)
-    #, covbases, coverage, meandepth, meanbaseq, meanmapq = \
-    #    read_stats_alignments(df_stats)
     
     df[['numReads' + al + tail]] = numreads
     #df[['covBases' + al  + tail]] = covbases
@@ -1272,21 +1345,23 @@ def calculate_rpht(read_counts, mapped_reads):
 
     return (read_counts / mapped_reads) * 100000 
 
-def add_rpht(df):
+def add_rpht(df, bool_vir, bool_dit):
     """
     Añade los valores de rpht al df
 
     """
     #import pandas as pd
     # valores de rpht según la detección de ViReMa
-    df[['rpht_virema']] = df.apply(lambda row : 
-        calculate_rpht(row['read_counts_virema'], row['numReads_bt2_mapped']), 
-        axis=1)
+    if bool_vir:
+        df[['rpht_virema']] = df.apply(lambda row : 
+            calculate_rpht(row['read_counts_virema'], row['numReads_bt2_mapped']), 
+            axis=1)
 
     # valores de rpht según la detección de DItector
-    df[['rpht_ditector']] = df.apply(lambda row : 
-        calculate_rpht(row['read_counts_ditector'], row['numReads_bm_mapped']),
-        axis=1)
+    if bool_dit:
+        df[['rpht_ditector']] = df.apply(lambda row : 
+            calculate_rpht(row['read_counts_ditector'], row['numReads_bm_mapped']),
+            axis=1)
     
     #df.to_csv("Outputs/unificate_temp_table_wRpht.csv", index=False)
 
@@ -1360,7 +1435,7 @@ def add_info_fq(sample_name, df, fq):
 # GENERATING AND ADDING THE INFO TO THE RESUME DF
 #–------------------------------------------------  
 
-def generate_df(sample_name, fq):
+def generate_df(sample_name):
     """
     Genera la estructura pd.DataFrame donde carga los datos del fichero 
     a procesar
@@ -1382,7 +1457,7 @@ def generate_df(sample_name, fq):
 
     return df, out_file
 
-def add_features(sample_name, fq, margin, len_wt, df):
+def add_features(sample_name, margin, len_wt, bool_vir, bool_dit, df):
     """
     Añade las variables a la tabla unificada de DVGs y las escribe en el 
     fichero 
@@ -1401,13 +1476,13 @@ def add_features(sample_name, fq, margin, len_wt, df):
 
     # añadimos la profundidad de cada coordenada BP y RI de los diferentes 
     # alineamientos 
-    df = write_depth_coordinate(sample_name, df)
+    df = write_depth_coordinate(sample_name, df, len_wt)
     # añadimos las ratios
-    df = write_proportion_reads(df)
+    df = write_proportion_reads(df, bool_vir, bool_dit)
     # añadimos los stats propios de cada alineamiento
     df = add_stats_all_alignments(sample_name, df)
     # añadimos los valores de rpht ((read_counts_dvg / mapped_reads)*100000)
-    df = add_rpht(df)
+    df = add_rpht(df, bool_vir, bool_dit)
     ## añadimos la información sobre el fastq
     #df = add_info_fq(sample_name, df, fq)
     # longitud de los dvgs
@@ -1421,8 +1496,9 @@ def add_features(sample_name, fq, margin, len_wt, df):
     return df
 
 
-def parallelize_add_features(df, sample_name, fq, margin, len_wt, 
-                            add_features, n_cores):
+def parallelize_add_features(df, sample_name, margin, len_wt, 
+                            bool_vir, bool_dit, add_features, 
+                            n_cores):
     """
     This function parallelize the process of adding features to the final df.
     First, check the number of events is at least equal to the n_cores, if not
@@ -1431,7 +1507,6 @@ def parallelize_add_features(df, sample_name, fq, margin, len_wt,
     Args:
         df  (pd.DataFrame)  [in]    
         sample_name (str)   [in]
-        fq  (str)   [in]
         margin  (int)   [in]
         add_features    (function)  [in]
         n_cores (int)   [in]
@@ -1446,7 +1521,7 @@ def parallelize_add_features(df, sample_name, fq, margin, len_wt,
     # iterable argument
     df_split = np.array_split(df, n_cores)
     # constant arguments
-    constant_args = [sample_name, fq, margin, len_wt]
+    constant_args = [sample_name, margin, len_wt, bool_vir, bool_dit]
 
     pool = Pool(n_cores)
 

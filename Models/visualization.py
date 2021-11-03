@@ -107,6 +107,7 @@ def scatter_color_by_DVGtype(df, size_by, title=None, leader_coord1=69,
             hover_name="cID_DI",
             title=title
             )
+    """ TRS-L & TRS-B of SARS-CoV-2 plot indication
     scatter.add_vrect(x0=leader_coord1, x1=leader_coord2, 
         annotation_text="TRS_L",annotation_position="top",
         fillcolor="green", opacity=0.40
@@ -115,6 +116,7 @@ def scatter_color_by_DVGtype(df, size_by, title=None, leader_coord1=69,
         annotation_text="TRS_L",
         fillcolor="green", opacity=0.40
     )
+    """
     scatter.update_xaxes(showgrid=False)
     scatter.update_yaxes(showgrid=False)
 
