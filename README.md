@@ -120,7 +120,7 @@ unzip example_sarscov2/example_sarscov2.fastq.zip
 python3 DVGfinder_v3.py -fq example_sarscov2.fastq -t probability_threshold_to_filter_as_realsDVGs -n number_of_process
 ```
 
-4. Wait and your results will appear in the 'FinalReports' directory. Also an html report will open in your default browser.
+4. Wait and your results will appear in the 'FinalReports' directory. In addition, an html report will open in your default browser.
 
 
 <!-- CONTACT -->
