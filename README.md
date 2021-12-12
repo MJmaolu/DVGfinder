@@ -5,10 +5,10 @@
     <img src="LOGO%20DVGfinder_marron.png" alt="Logo" width="800" /*height="80"*/>
   </a>
 
-  <h3 align="center">DVGfinder_v2</h3>
+  <h3 align="center">DVGfinder_v3</h3>
 
   <p align="center">
-    DVGfinder is a program that integrates the DVGs ViReMa-a and DI-tector search algorithms, making the analysis of a sample easier and more intuitive. Also, DVGfinder implements a Random Forest model to filter out false positives introduced by the search algorithms.
+    DVGfinder is a program that integrates the DVGs ViReMa-a and DI-tector search algorithms, making the analysis of a sample easier and more intuitive. Also, DVGfinder_v3 implements a Gradient Boosting classifier to try to reduce the number of false positives introduced by the search algorithms.
     <br />
   </p>
 </p>
@@ -99,7 +99,7 @@ This third party scripts are in the ExternalNeeds directory so you only have to 
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-```python3 DVGfinder_v2.py -fq fastq_file [-r virus_reference] [-m margin] [-n number_processes]```
+```python3 DVGfinder_v3.py -fq fastq_file [-r virus_reference] [-m margin] [-t threshold] [-n number_processes]```
 
 <!-- TUTORIAL -->
 
@@ -117,16 +117,16 @@ unzip example_sarscov2/example_sarscov2.fastq.zip
 3. Run DVGfinder on the example sample
 
 ```
-python3 DVGfinder_v2.py -fq example_sarscov2.fastq -n your_number_of_process
+python3 DVGfinder_v3.py -fq example_sarscov2.fastq -t probability_threshold_to_filter_as_realsDVGs -n number_of_process
 ```
 
-4. Wait and your results will appear in the 'FinalReports' directory
+4. Wait and your results will appear in the 'FinalReports' directory. Also an html report will open in your default browser.
 
 
 <!-- CONTACT -->
 ## Contact
 
-María José Olmo-Uceda - maolu@alumni.uv.es
+María José Olmo-Uceda - mariajose.olmo@csic.es
 
 PhD student
 
