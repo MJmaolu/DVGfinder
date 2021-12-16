@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-## Funciones para el MÓDULO PREDICTION 
+## Functions for the PREDICTION module
 ##                  DVGfinder: Defective Viral Genome-finder
 ###############################################################################
 ## Genera la predicción y selecciona los DVGs predichos como reales de entre
@@ -11,9 +11,9 @@
 ## HTML
 ###############################################################################
 ## Author: Maria Jose Olmo-Uceda
-## Version: 1.0
-## Email: maolu@alumni.uv.es
-## Date: 2021/07
+## Version: 3.0
+## Email: mariajose.olmo@csic.es
+## Date: 2021/12
 ###############################################################################
 
 # third party imports
@@ -166,6 +166,36 @@ def df_to_df_metrics_reduced(df):
 
     return df_metrics_reduced
 
+def df_to_df_metrics_reduced_v3(df):
+
+    # Los 17 predictores seleccionados por RFE (durante fase de entrenamiento 
+    # del modelo) 
+    selected_metrics = ['rpht_virema', 'rpht_ditector',
+    'pBP_virema', 'pRI_virema', 'pBP_ditector', 'pRI_ditector',
+    'sdrm_junction_bt2_mapped', 'sdrm_junction_bm_mapped', 
+    'sdrm_junction_bt2_H', 'sdrm_junction_bm_H',
+    'sdrm_neighborsBP_bt2_mapped', 'sdrm_neighborsRI_bt2_mapped',
+    'sdrm_neighborsBP_bm_mapped', 'sdrm_neighborsRI_bm_mapped',
+    'sdrm_neighborsBP_bt2_H', 'sdrm_neighborsRI_bt2_H', 
+    'sdrm_neighborsBP_bm_H', 'sdrm_neighborsRI_bm_H']
+
+    # tabla de métricas
+    df_metrics = df_to_metrics_df(df)
+
+    # reducida a las variables que acepta el modelo
+    df_metrics_reduced = df_metrics[df_metrics.columns.\
+                                    intersection(selected_metrics)]
+    df_metrics_reduced.columns = ['rpht_virema', 'rpht_ditector',
+    'pBP_virema', 'pRI_virema', 'pBP_ditector', 'pRI_ditector',
+    'sdrm_junction_bt_mapped', 'sdrm_junction_bm_mapped', 
+    'sdrm_junction_bt_H', 'sdrm_junction_bm_H',
+    'sdrm_neighborsBP_bt_mapped', 'sdrm_neighborsRI_bt_mapped',
+    'sdrm_neighborsBP_bm_mapped', 'sdrm_neighborsRI_bm_mapped',
+    'sdrm_neighborsBP_bt_H', 'sdrm_neighborsRI_bt_H', 
+    'sdrm_neighborsBP_bm_H', 'sdrm_neighborsRI_bm_H']
+
+    return df_metrics_reduced
+
 
 # Aplicación del modelo
 # -----------------------------------------------------------------------------
@@ -196,6 +226,51 @@ def generate_prediction_and_add_to_df_resume(df, model_file):
     df_w_pred['prediction'] = y_pred # añadimos la predicción al df completo
 
     return df_w_pred
+
+def filter_predicted_as_reals_v3(df, model_file, threshold):
+    """
+    Función completa a la que se llama desde el controlador (DVGfinder.py).
+    Realiza todo el proceso de: 
+        - generar las métricas a partir del df completo,
+        - reducir los predictores a los que acepta el modelo
+        - Carga el modelo y genera la predicción
+        - Extrae los DVGs predichos como reales y devuelve la tabla a mostrar
+            (features_to_show) en el informe HTML
+    
+    Args:
+        df  (pd.DataFrame)  Tabla completa resultado del módulo metabuscador
+        model_file  (str)   Fichero .sav con el modelo de predicción
+    
+    Return:
+        df_ML_show  (pd.DataFrame)  Tabla con los DVGs predichos como reales
+                                por el modelo y las columnas que se quieren
+                                mostrar (features_to_show)
+    """
+
+    features_to_show = ['cID_DI', 'p(real)', 'BP', 'RI', 'sense', 'DVG_type', 
+        'length_dvg', 'read_counts_virema', 'pBP_virema', 'pRI_virema',
+        'rpht_virema', 'read_counts_ditector','pBP_ditector', 'pRI_ditector', 
+        'rpht_ditector']
+
+    # Cargamos el modelo
+    model = pickle.load(open(model_file, 'rb'))
+
+    # generación del df con las métricas que acepta el modelo
+    #df_metrics = df_to_metrics_df(df)  # all metrics
+    df_metrics = df_to_df_metrics_reduced_v3(df)   # 18 features
+
+    # predicción
+    y_pred = model.predict_proba(df_metrics)[:,1] # vector with p(label1)
+
+    df_w_pred = df[:] # unlinked copy
+    df_w_pred['p(real)'] = y_pred # añadimos la predicción al df
+
+    # filtramos DVGs predichos como reales    
+    df_ML = df_w_pred[df_w_pred['p(real)'] >= threshold]
+    # Dejamos solo las variables a mostrar
+    df_ML_show = df_ML[df_ML.columns.intersection(features_to_show)]
+
+    return df_ML_show
 
 def filter_predicted_as_reals(df, model_file):
     """
@@ -240,4 +315,3 @@ def filter_predicted_as_reals(df, model_file):
     df_ML_show = df_ML[df_ML.columns.intersection(features_to_show)]
 
     return df_ML_show
-
