@@ -6,27 +6,26 @@
 ## 
 ##                  DVGfinder: Defective Viral Genome-finder
 ###############################################################################
-## PROGRAMA PRINCIPAL (controlador):
-##       1.1. Metabúsqueda de DVGs con ViReMa-a (0.23) y DI-tector (v0.6)
-##       1.2. Procesamiento de los alineamientos
-##       1.3. Generación de una tabla conjunta con todos los DVGs detectados y 
-##          extracción de variables
-##       2.   Predicción con el modelo de Random Forest entrenado de los 
-##            eventos reales
-##       3.   Generación del informe HTML con las tablas a mostrar y las 
-##            visualizaciones. 3 modos:
-##          - COMPLETO: DVGs detectados por ViReMa-a + DI-tector
-##          - CONSENSO: solos DVGs detectados por ambos 
-##          - PREDICHO (ML): DVGs predichos como reales con el modelo de ML       
+##  STRUCTURE:
+##       1.1. DVGS metasearch with ViReMa-a (0.23) and DI-tector (v0.6)
+##       1.2. Alignment processing
+##       1.3. Generation of a unify table with all the detected DVGs and 
+##          
+##       2.   Prediction of the real events with a Gradient Boosting classifier
+##            algorithm trained model
+##       3.   Generation of an HTML report with interactive tables and plots 
+##            3 modes:
+##          - ALL: all the DVGs detected by ViReMa-a and DI-tector
+##          - CONSENSUS: intersection 
+##          - FILTERED: DVGs predicted as reals (p(TP) >= defined threshold)      
 ##                               
 ###############################################################################
 ## Author: Maria Jose Olmo-Uceda
-## Version: 2.0     
-## ((Continúa el flujo del programa aunque alguno de los algoritmos de búsqueda
-## no encuentre DVGs. Adapta el report mostrando los modos en los que se tiene
-## información))
-## Email: maolu@alumni.uv.es
-## Date: 2021/10/10
+## Version: 3.0     
+## - Change in the prediction model --> Gradient Boosting Classifier: 
+##                                      "gbc_randomOpt_train.sav"
+## Email: mariajose.olmo@csic.es
+## Date: 2021/12/01
 ###############################################################################
 
 # system imports
@@ -52,7 +51,8 @@ def main():
     t0 = time.time()
 
     # Lee los parámetros introducidos por el usuario
-    fq, virus_ref, virus_ref_path, margin, n_processes = metabuscador.read_arguments()
+    fq, virus_ref, virus_ref_path, margin, threshold, n_processes = \
+        metabuscador.read_arguments_v3()
 
     # Extraemos el nombre de la muestra
     sample_name = os.path.basename(fq).split(".")[-2]
@@ -68,7 +68,7 @@ def main():
 
     ## Fichero donde tenemos guardado el modelo
     # model_file = "rf_noTunning_rfe17.sav"
-    model_file = "rf_tunning_x17.sav"
+    model_file = "gbc_randomOpt_train.sav"
 
     ###########################################################################
     # PARTE 1: METABUSCADOR
@@ -123,9 +123,11 @@ def main():
     ## info base: BP, RI, read_counts_{program}, sense/DVG_type
     metabuscador.extract_recombination_events_virema(sample_name, ref)
     metabuscador.extract_recombination_events_ditector(sample_name)
-
+    
     ## Comprobamos qué programas han encontrado eventos --> booleano
     bool_vir, bool_dit = metabuscador.which_program_found(sample_name)
+    
+    #bool_vir = bool_dit = True 
     ## Definimos caso de uso en el que nos encontramos (4 posibles)
     case = metabuscador.define_case(bool_vir, bool_dit)
     print()
@@ -151,10 +153,12 @@ def main():
             
         # Creamos una primera versión de la tabla unificada con la información 
         # extraída directamente de los raw_{program}
-        metabuscador.create_unificate_dvg_table(sample_name, bool_vir, bool_dit)
+        # Excluye cualquier DVG que esté caracterizado fuera del rango del 
+        # genoma de referencia
+        metabuscador.create_unificate_dvg_table(sample_name, bool_vir, bool_dit, len_wt)
         
         ## Borrar los ficheros con el output separado por programa
-        os.system("rm Outputs/*_from_raw_*")
+        #os.system("rm Outputs/*_from_raw_*")
         
         ##Cargamos el dataframe en el que añadiremos las variables
         df, out_file = metabuscador.generate_df(sample_name)
@@ -168,19 +172,19 @@ def main():
                                             n_processes)
         df.to_csv(out_file, index=False)
 
-        #t5 = time.time()
+        t5 = time.time()
 
         ###########################################################################
         # PARTE 2: APLICACIÓN DEL MODELO DE ML A LA TABLA DE EVENTOS DETECTADOS
         ###########################################################################
         # Solo en el CASO 1 --> DVGs obtenidos con ambos programas
         if case == "case_1":
-            df_ML_show = prediction.filter_predicted_as_reals(df, model_file)
-            print("~"*49)
+            df_ML_show = prediction.filter_predicted_as_reals_v3(df, model_file, threshold)
+            print("~"*36)
             print("df_ML generated")
             df_ML_show.to_csv("{}_df_ML.csv".format(sample_name), index=False)
 
-            #t6 = time.time()
+        t6 = time.time()
         
         go = False
     ###########################################################################
@@ -248,24 +252,27 @@ def main():
     os.system('mv Outputs/ditector/* {}'.format(dir_olds_ditector))
     os.system('mv Outputs/* {}'.format(dir_olds))
     # Borramos el directorio Outputs
-    os.system('rm -r Outputs')
+    #os.system('rm -r Outputs')
 
     tf = time.time()
     
     # Informamos sobre los tiempos de ejecución
     print(headerName.s5)
     print("-" * 79)
+    """
     print("- Virema DVG search: {} s".format(t2-t1))
     print("- Ditector DVG search: {} s".format(t3-t2))
     print("- Alignments inspection: {} s".format(t4-t3))
     print("- DVGfinder's processing: {} s".format(tf-t4))
-    #print("- Metrics and table generation: {} s".format(t5-t4))
-    #print("- DVG filter with ML algorithm: {} s".format(t6-t5))
-    #print("- Visualizations and HTML report generation: {} s".format(tf-t6))
+    print("- Metrics and table generation: {} s".format(t5-t4))
+    print("- DVG filter with ML algorithm: {} s".format(t6-t5))
+    print("- Visualizations and HTML report generation: {} s".format(tf-t6))
+    """
     print()
     print("- Total time: {} s".format(tf-t0))
     print("-" * 79)
 
     
 if __name__=='__main__':
-    main()  
+    main()
+  
