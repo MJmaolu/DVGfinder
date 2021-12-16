@@ -102,25 +102,21 @@ This third party scripts are in the ExternalNeeds directory so you only have to 
 ```python3 DVGfinder_v3.py -fq fastq_file [-r virus_reference] [-m margin] [-t threshold] [-n number_processes]```
 
 <!-- TUTORIAL -->
-
 ## Tutorial
 
 You can explore an example of results in the directory 'tumvas72_N100K_l100'. 
 
 To test the program follow the next steps:
 
-1. Unzip the fastq.zip file
-```sh
-unzip tumvas72_N100K_l100/tumvas72_N100K_l100.fq.zip
-```
+1. Activate the environment 
 
-3. Run DVGfinder on the example sample
+2. Run DVGfinder on the example sample
 
 ```
 python3 DVGfinder_v3.py -fq tumvas72_N100K_l100.fq -t probability_threshold_to_filter_as_realsDVGs -n number_of_process
 ```
 
-4. Wait and your results will appear in the 'FinalReports' directory. In addition, an html report will open in your default browser.
+3. Wait and your results will appear in the 'FinalReports' directory. In addition, an html report will open in your default browser.
 
 [Link to an example HTML report](https://github.com/MJmaolu/DVGfinder/tumvas72_N100K_l100_report.html)
 
