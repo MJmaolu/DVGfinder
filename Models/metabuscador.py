@@ -2,23 +2,22 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-## Funciones para el MÓDULO METABUSCADOR 
+## Functions for the METASEARCH module (v3) 
 ##                  DVGfinder: Defective Viral Genome-finder
 ###############################################################################
-## Lanza los programas ViReMa-a (v0.23) y DI-tector (v0.6). Procesa los 
-## alineamientos, genera los ficheros sobre profundidades y extra la información
-## básica sobre las recombinaciones detectadas por los algoritmos base.
-## A partir de lo anterior genera una tabla unificada con todos los DVGs 
-## detectados por uno u otro programa y añade las variables que hemos considerado
-## informativas
+## Run the programs ViReMa-a (v0.23) and DI-tector (v0.6). Process the 
+## alignments, generate the depth files and extra information about the 
+## recombinations detected by the DVGs search algorithms.
+## From this point, generate an unified table with all the DVGs detected by
+## the programs and add informative features.
 ##
-## El resultado de cada algoritmo utilizado como base queda guardado en 
-## el directorio 'oldReports'
+## The result of each search algorithm is stored on 'oldReports' when the 
+## whole process is finished.
 ###############################################################################
 ## Author: Maria Jose Olmo-Uceda
-## Version: 1.0
-## Email: maolu@alumni.uv.es
-## Date: 2021/07
+## Version: 3.0
+## Email: mariajose.olmo@csic.es
+## Date: 2021/10/10
 ###############################################################################
 
 # system imports
@@ -33,7 +32,7 @@ import pandas as pd
 import numpy as np
 import pyfastx
 
-# PARÁMETROS DE ENTRADA
+# READ USER PARAMETERS
 # -----------------------------------------------------------------------------
 
 def read_arguments():
@@ -45,7 +44,7 @@ def read_arguments():
             [Default is SD2_0h]""")
     parser.add_argument('-r', '--virus_reference', 
             help="""Genome reference in fasta format. Needs the indexed genome
-            (for bwa and for bowtie) in the same directory.
+            for bwa and for bowtie in the same directory.
             [Default is SARSCoV2_Wuhan1.fasta]""")
     parser.add_argument('-m', '--margin', 
             help=""" Number of positions to take in account for the average
@@ -84,7 +83,64 @@ def read_arguments():
     
     return fq, virus_ref, virus_ref_path, margin, n_processes
 
-# 1.1: IDENTIFICACIÓN DE LOS DVGS
+def read_arguments_v3():
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-fq', '--fastq_file', 
+            help=
+            """Complete path to the fastq file we want to process.
+            [Default is SD2_0h]""")
+    parser.add_argument('-r', '--virus_reference', 
+            help="""Genome reference in fasta format. Needs the indexed genome
+            for bwa and for bowtie in the same directory.
+            [Default is SARSCoV2_Wuhan1.fasta]""")
+    parser.add_argument('-m', '--margin', 
+            help=""" Number of positions to take in account for the average
+            post and pre coordinate metrics. [Default is 5].""")
+    parser.add_argument('-t', '--threshold',
+            help="""Probability threshold (float). The prediction module will show only
+            events with p(real) >= threshold. [Default is 0.5].""")
+    parser.add_argument('-n', '--n_processes', 
+            help="Number of processes. [Default is 1].")
+    #parser.print_help()
+    args = parser.parse_args()
+
+    # Definimos las variables de entrada y salida
+    ## fq file with single ends to process
+    if args.fastq_file:
+        fq = args.fastq_file
+    else:
+        fq = "SD2_0h.fq"
+
+    ## Reference genome
+    if args.virus_reference:
+        virus_ref = args.virus_reference
+        virus_ref_path = args.virus_reference
+    else:
+        virus_ref = "SARSCoV2WuhanHu1.fasta"
+        virus_ref_path = "ExternalNeeds/references/" + virus_ref
+    
+    ## margin positions
+    if args.margin:
+        margin = int(args.margin)
+    else:
+        margin = 5
+    
+    ## threshold
+    if args.threshold:
+        threshold = float(args.threshold)
+    else:
+        threshold = 0.5
+    
+    ## number of processes
+    if args.n_processes:
+        n_processes = int(args.n_processes)
+    else:
+        n_processes = 1
+    
+    return fq, virus_ref, virus_ref_path, margin, threshold, n_processes
+
+# 1.1: DVG SEARCH
 # -----------------------------------------------------------------------------
 def run_virema_v023(fq, sample_name, virus_ref_no_extension, n_processes):
     """
@@ -167,7 +223,7 @@ def run_ditector(fq, sample_name, virus_ref_path, n_processes):
     subprocess.run(['rm', wo_virus, seqment, aln, ali, well_aln, depth_well_aln])
 
 
-# 1.2: EXTRACCIÓN DE DATOS Y GENERACIÓN DE MÉTRICAS
+# 1.2: EXTRACTION OF DATA AND METRICS GENERATION
 # -----------------------------------------------------------------------------
 
 def move_alignments(sample_name):
@@ -642,10 +698,10 @@ def lists_dvgs(sample_name, bool_vir, bool_dit):
 
     return dvg_list, dvg_list_vir, dvg_list_dit
 
-# 1.3: GENERACIÓN DE LA TABLA RESUMEN CON LAS MÉTRICAS
+# 1.3: GENERATION OF RESUME TABLE 
 # -----------------------------------------------------------------------------
 
-def create_unificate_dvg_table(sample_name, bool_vir, bool_dit):
+def create_unificate_dvg_table(sample_name, bool_vir, bool_dit, len_wt):
     """
     Generamos el df unificado con la información de salida de los programas
     """
@@ -660,7 +716,8 @@ def create_unificate_dvg_table(sample_name, bool_vir, bool_dit):
     df = pd.DataFrame()
     df[['cID_DI']] = dvg_list
     df[['sense', 'BP', 'RI']] = df.cID_DI.str.split("_", expand=True,)
-
+    # convertimos BP y RI a tipo integer
+    df = df.astype({'BP' : int, 'RI' : int}) 
     df[['DVG_type']] = df.apply(lambda row : 
                              asign_dvg_type(row['sense'], row['BP'], 
                              row['RI']), axis=1)
@@ -672,9 +729,13 @@ def create_unificate_dvg_table(sample_name, bool_vir, bool_dit):
         df[['read_counts_ditector']] = df.apply(lambda row : 
                             extract_counts_ditector(row['cID_DI'], sample_name,
                              dvg_list_dit), axis=1)
-    df.to_csv(output_file, index=False)
+    # Antes de escribir revisamos que todos los DVGs tengan un rango de coordenadas
+    # adecuado. Es decir, que BP o RI no puedan ser > len_wt ni < 1 (este tipo
+    # de errores puede ser cometido por DI-tector. Los eliminamos del df.
+    df_possible = df.loc[~((df.BP > len_wt) | (df.RI > len_wt) | (df.BP < 1) | (df.RI < 1))]
+    df_possible.to_csv(output_file, index=False)
     
-    return df
+    #return df_possible
 
 #–---------------------    
 # COUNTS NUMBER
@@ -864,7 +925,7 @@ def mean_depth_neighborhood_pre_coordinate(coordinate, sample_name, depth_txt,
 
 
 def mean_depth_neighborhood_post_coordinate(coordinate, sample_name, depth_txt,
-                                            margin):
+                                            margin, len_wt):
     """
     Calcula la profundidad media de las 'margin' posiciones después 
     de la coordenada
@@ -892,15 +953,19 @@ def mean_depth_neighborhood_post_coordinate(coordinate, sample_name, depth_txt,
     
     # comprobamos que el punto de inicio no está fuera del rango del genoma
     end = coordinate + margin + 1
-
-    if end > 29903:
-        end = 29903
+    
+    # si el final proyectado sobrepasa la longitud del genoma llegamos hasta la última posición	
+    if end >= len_wt:
+        end = len_wt
+    # si el final proyectado es <= al margen (significa que la coordenada es < 0), establecemos la coordenada en 1
+    elif end <= margin:
+        coordinate = 1
     # nos aseguramos de que no va a dividir por 0.
-    if coordinate == 29903 or df.empty:
+    if coordinate == len_wt or df.empty:
         meanPost = 0
     else:
         positions_checked = end - (coordinate + 1)
-        if positions_checked == 0:
+        if positions_checked <= 0:
             positions_checked = 1 # aseguramos que no pueda haber /0
         sum_depth_values = 0
         for pos in range(coordinate + 1, end):
@@ -912,7 +977,7 @@ def mean_depth_neighborhood_post_coordinate(coordinate, sample_name, depth_txt,
 
     return meanPost
     
-def write_depth_neighborhood_coordinate(sample_name, df, margin):
+def write_depth_neighborhood_coordinate(sample_name, df, margin, len_wt):
     """
     Escribe el fichero con
 
@@ -955,26 +1020,26 @@ def write_depth_neighborhood_coordinate(sample_name, df, margin):
                                             margin), axis=1)
     df[['mean_depth_post'+str(margin)+'BP_bt2_mapped']] = df.apply(lambda row : 
         mean_depth_neighborhood_post_coordinate(row['BP'], sample_name, 
-                                            bt2_mapped, margin), axis=1)    
+                                            bt2_mapped, margin, len_wt), axis=1)    
     df[['mean_depth_pre'+str(margin)+'RI_bt2_mapped']] = df.apply(lambda row : 
         mean_depth_neighborhood_pre_coordinate(row['RI'], sample_name, bt2_mapped, 
                                             margin), axis=1)
     df[['mean_depth_post'+str(margin)+'RI_bt2_mapped']] = df.apply(lambda row : 
         mean_depth_neighborhood_post_coordinate(row['RI'], sample_name, bt2_mapped,
-                                            margin), axis=1)    
+                                            margin, len_wt), axis=1)    
     
     df[['mean_depth_pre'+str(margin)+'BP_bt2_H']] = df.apply(lambda row : 
         mean_depth_neighborhood_pre_coordinate(row['BP'], sample_name, bt2_H, 
                                             margin), axis=1)
     df[['mean_depth_post'+str(margin)+'BP_bt2_H']] = df.apply(lambda row : 
         mean_depth_neighborhood_post_coordinate(row['BP'], sample_name, bt2_H, 
-                                            margin), axis=1)    
+                                            margin, len_wt), axis=1)    
     df[['mean_depth_pre'+str(margin)+'RI_bt2_H']] = df.apply(lambda row : 
         mean_depth_neighborhood_pre_coordinate(row['RI'], sample_name, bt2_H, 
                                             margin), axis=1)
     df[['mean_depth_post'+str(margin)+'RI_bt2_H']] = df.apply(lambda row : 
         mean_depth_neighborhood_post_coordinate(row['RI'], sample_name, bt2_H, 
-                                            margin), axis=1)    
+                                            margin, len_wt), axis=1)    
 
     """
     df[['mean_depth_pre'+str(margin)+'BP_bm']] = df.apply(lambda row : 
@@ -994,27 +1059,27 @@ def write_depth_neighborhood_coordinate(sample_name, df, margin):
         mean_depth_neighborhood_pre_coordinate(row['BP'], sample_name, bm_mapped, margin), 
         axis=1)
     df[['mean_depth_post'+str(margin)+'BP_bm_mapped']] = df.apply(lambda row : 
-        mean_depth_neighborhood_post_coordinate(row['BP'], sample_name, bm_mapped, margin), 
-        axis=1)    
+        mean_depth_neighborhood_post_coordinate(row['BP'], sample_name, bm_mapped, 
+                                                margin, len_wt), axis=1)    
     df[['mean_depth_pre'+str(margin)+'RI_bm_mapped']] = df.apply(lambda row : 
         mean_depth_neighborhood_pre_coordinate(row['RI'], sample_name, bm_mapped, margin), 
         axis=1)
     df[['mean_depth_post'+str(margin)+'RI_bm_mapped']] = df.apply(lambda row : 
-        mean_depth_neighborhood_post_coordinate(row['RI'], sample_name, bm_mapped, margin), 
-        axis=1)    
+        mean_depth_neighborhood_post_coordinate(row['RI'], sample_name, bm_mapped, 
+                                            margin, len_wt), axis=1)    
     
     df[['mean_depth_pre'+str(margin)+'BP_bm_H']] = df.apply(lambda row : 
         mean_depth_neighborhood_pre_coordinate(row['BP'], sample_name, bm_H, margin), 
         axis=1)
     df[['mean_depth_post'+str(margin)+'BP_bm_H']] = df.apply(lambda row : 
-        mean_depth_neighborhood_post_coordinate(row['BP'], sample_name, bm_H, margin), 
-        axis=1)    
+        mean_depth_neighborhood_post_coordinate(row['BP'], sample_name, bm_H, 
+                                            margin, len_wt), axis=1)    
     df[['mean_depth_pre'+str(margin)+'RI_bm_H']] = df.apply(lambda row : 
         mean_depth_neighborhood_pre_coordinate(row['RI'], sample_name, bm_H, margin), 
         axis=1)
     df[['mean_depth_post'+str(margin)+'RI_bm_H']] = df.apply(lambda row : 
-        mean_depth_neighborhood_post_coordinate(row['RI'], sample_name, bm_H, margin), 
-        axis=1)    
+        mean_depth_neighborhood_post_coordinate(row['RI'], sample_name, bm_H, 
+                                            margin, len_wt), axis=1)    
     
     # write
     #df.to_csv("Outputs/unificate_temp_table_wMeanDepths.csv", index=False)
@@ -1051,6 +1116,8 @@ def write_proportion_reads(df, bool_vir, bool_dit):
     Args:
         df  (pd.DataFrame)  [in]    Tabla con los datos resumen ya cargada en 
                                     memoria y preparada para modificarse
+        bool_vir    (bool)  Indica si virema ha encontrado DVGs
+        bool_dit    (bool)  Indica si ditector ha encontrado DVGs
     Returns:
         df  (pd.DataFrame)  [in]    df al que se le han añadido los datos sobre
                                     ratio
@@ -1490,7 +1557,7 @@ def add_features(sample_name, margin, len_wt, bool_vir, bool_dit, df):
 
     # añadimos la profundidad media en las fronteras de BP y RI de todos los 
     # tipos de alineamiento de que disponemos.
-    df = write_depth_neighborhood_coordinate(sample_name, df, margin)
+    df = write_depth_neighborhood_coordinate(sample_name, df, margin, len_wt)
 
     #df.to_csv(out_file, index=False)
     return df
@@ -1518,6 +1585,10 @@ def parallelize_add_features(df, sample_name, margin, len_wt,
     # the n_events
     if len(df) < n_cores:
         n_cores = len(df)
+    # limit the number of cores to 10, because in some serves could cause 
+    # problems
+    elif n_cores > 10:
+        n_cores = 10
     # iterable argument
     df_split = np.array_split(df, n_cores)
     # constant arguments
@@ -1532,8 +1603,3 @@ def parallelize_add_features(df, sample_name, margin, len_wt,
     df = pd.concat(r.get() for r in results)
     
     return df
-
-
-
-
-
