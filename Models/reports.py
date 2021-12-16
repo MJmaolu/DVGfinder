@@ -2,16 +2,16 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-## Funciones para el MÓDULO REPORTS 
+## Functions for REPORTS module 
 ##                  DVGfinder: Defective Viral Genome-finder
 ###############################################################################
-## Genera el informe HTML y lo guarda junto con las tablas de los tres modos
-## 'All', 'Consensus' y 'ML' en el directorio 'FinalReports/{sample_name}/'
+## Generate an HTML report. Also, the tables shown are saved in the three modes:
+## 'All', 'Consensus' y 'ML' in the 'FinalReports/{sample_name}/' directory.
 ###############################################################################
 ## Author: Maria Jose Olmo-Uceda
-## Version: 1.0
+## Version: 3.0
 ## Email: maolu@alumni.uv.es
-## Date: 2021/07
+## Date: 2021/12
 ###############################################################################
 
 # third party imports
@@ -101,7 +101,7 @@ def create_table_consensus(df_all):
 
 def create_table_filteredML(df_filtered):
     """
-    ## NO SE USA
+    ################################ NOT USED ################################
     Selecciona las variables a mostrar en la tabla de filtrados ML 
     Args:
         df_filtered (pd.DataFrame)  Tabla con los eventos que quedan tras
@@ -318,7 +318,7 @@ def generate_report(df, df_predicted_reals_show, sample_name, len_wt):
     else:
         consensus = False
 
-    ## ML MODEL FILTER. Si hay DVGs que pasan el filtro generamos las visuals
+    ## ML MODEL FILTER. Only if there are filtered DVGs as potential reals
     ### scatterplots
     if not df_predicted_reals_show.empty:
         predicted = True
