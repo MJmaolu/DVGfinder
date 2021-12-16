@@ -122,6 +122,8 @@ python3 DVGfinder_v3.py -fq example_sarscov2.fastq -t probability_threshold_to_f
 
 4. Wait and your results will appear in the 'FinalReports' directory. In addition, an html report will open in your default browser.
 
+[Link to an example HTML report](https://github.com/MJmaolu/DVGfinder/edit/v3/tumvas72_N100K_l100_report.html)
+
 
 <!-- CONTACT -->
 ## Contact
