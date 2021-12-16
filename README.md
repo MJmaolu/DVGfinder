@@ -79,7 +79,7 @@ This third party scripts are in the ExternalNeeds directory so you only have to 
    
 3. Unzip model file
    ```sh
-   unzip rf_tunning_x17.sav.zip
+   unzip gbc_randomOpt_train.sav.zip
    ```
    
 4. Give execution permission to all the scripts in the DVGfinder directory
