@@ -10,7 +10,7 @@
   <p align="center">
     <b>DVGfinder</b> is a tool that integrates the most used DVGs search algorithms, <b>ViReMa-a</b> and <b>DI-tector</b>, in a unique workflow, making the analysis of a sample easier and more intuitive. 
   
-  Also, DVGfinder_v3 implements a Gradient Boosting classifier to try to reduce the number of false positives introduced by the search algorithms and generates an HTML report with interactive tables and plots that facilitate a first exploration of the results.
+  Also, DVGfinder_v3 implements a Gradient Boosting classifier to try to reduce the number of false positives introduced by the search algorithms and generates an HTML report with interactive tables and plots that facilitates a first exploration of the results.
     <br />
   </p>
 </p>
