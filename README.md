@@ -147,8 +147,9 @@ Project Link: [https://github.com/MJmaolu/DVGfinder](https://github.com/MJmaolu/
 Page Link: [https://mjmaolu.github.io/DVGfinder/](https://mjmaolu.github.io/DVGfinder/)
 
 <p align='right'> 
-**Under Construction** 
-*Any suggestions will be welcome ;)* 
+  <b>**Under Construction**</b> 
+
+  <em>*Any suggestions will be welcome ;)*</em>
 </p>
 
 <!-- MARKDOWN LINKS & IMAGES -->
