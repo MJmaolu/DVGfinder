@@ -119,7 +119,6 @@ python3 DVGfinder_v3.py -fq tumvas72_N100K_l100.fq -t probability_threshold_to_f
 3. Wait and your results will appear in the 'FinalReports' directory. In addition, an html report will open in your default browser.
 
 [Link to an example HTML report](https://github.com/MJmaolu/DVGfinder/tumvas72_N100K_l100/tumvas72_N100K_l100_report.html)
-<a href="tumvas72_N100K_l100/tumvas72_N100K_l100_report.html">Link to an example HTML report</a>
 
 <!-- CONTACT -->
 ## Contact
