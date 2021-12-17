@@ -150,7 +150,7 @@ Page Link: [https://mjmaolu.github.io/DVGfinder/](https://mjmaolu.github.io/DVGf
   <b>Under Construction</b> 
 </p> 
 <p align='right'> 
-  Any suggestions will be welcome ;)
+  Any suggestions will be welcome :hugs:
 </p>
 
 <!-- MARKDOWN LINKS & IMAGES -->
