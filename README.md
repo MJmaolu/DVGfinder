@@ -146,10 +146,10 @@ Project Link: [https://github.com/MJmaolu/DVGfinder](https://github.com/MJmaolu/
 
 Page Link: [https://mjmaolu.github.io/DVGfinder/](https://mjmaolu.github.io/DVGfinder/)
 
-
+<p style='text-align: right;'>
 **Under Construction** 
 
-*Any suggestions will be welcome;)*
+*Any suggestions will be welcome ;)*</p>
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
