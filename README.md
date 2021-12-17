@@ -139,6 +139,7 @@ María José Olmo-Uceda - mariajose.olmo@csic.es
 PhD student
 
 *EvolSysVir Group*, I<sup>2</sup>SysBio (CSIC-UV) 
+---
 
 Project Link: [https://github.com/MJmaolu/DVGfinder](https://github.com/MJmaolu/DVGfinder)
 
