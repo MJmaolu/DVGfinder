@@ -120,8 +120,13 @@ python3 DVGfinder_v3.py -fq tumvas72_N100K_l100.fq -t probability_threshold_to_f
 
 [Link to an example HTML report](https://github.com/MJmaolu/DVGfinder/tumvas72_N100K_l100/tumvas72_N100K_l100_report.html)
 
-### Some keys to interprete the results
+#### About the HTML report: 
 
+- The results are displayed at three levels (tabs at the top): ALL, CONSENSUS and FILTERED ML. 
+
+- CONSENSUS and FILTERED ML only appear if both search algorithms have identified DVGs in the sample.
+
+- The same information displayed in the interactive tables is written in csv files.
 
 
 <!-- CONTACT -->
