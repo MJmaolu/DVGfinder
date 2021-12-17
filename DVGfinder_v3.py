@@ -23,7 +23,7 @@
 ## Author: Maria Jose Olmo-Uceda
 ## Version: 3.0     
 ## - Change in the prediction model --> Gradient Boosting Classifier: 
-##                                      "gbc_randomOpt_train.sav"
+##                                      "gbc_randomOpt.sav"
 ## Email: mariajose.olmo@csic.es
 ## Date: 2021/12/01
 ###############################################################################
@@ -50,44 +50,42 @@ def main():
     #print(os.listdir())
     t0 = time.time()
 
-    # Lee los parámetros introducidos por el usuario
+    # User parameters
     fq, virus_ref, virus_ref_path, margin, threshold, n_processes = \
         metabuscador.read_arguments_v3()
 
-    # Extraemos el nombre de la muestra
     sample_name = os.path.basename(fq).split(".")[-2]
 
     #ref = "NC_045512.2"
-    ### nombre de la referencia sin la extensión
+    ### Reference name without extension
     virus_ref_no_extension = os.path.basename(virus_ref).split(".")[-2]
 
-    # Lee el genoma de referencia del fichero fasta para extraer su longitud
+    # Genome length
     wt_sequence = SeqIO.read(virus_ref_path, "fasta")
     len_wt = len(wt_sequence)
     ref = wt_sequence.id # extraemos el identificador utilizado como referencia
 
-    ## Fichero donde tenemos guardado el modelo
-    # model_file = "rf_noTunning_rfe17.sav"
-    model_file = "gbc_randomOpt_train.sav"
+    ## Predictive model file
+    model_file = "gbc_randomOpt.sav"
 
     ###########################################################################
-    # PARTE 1: METABUSCADOR
+    # PARTE 1: METASEARCH
     ###########################################################################
     
-    # 1.1: IDENTIFICACIÓN DE LOS DVGS
+    # 1.1: DVG SEARCH
     # -------------------------------------------------------------------------
     t1 = time.time() 
     
-    # Con ViReMa
+    # With ViReMa-a
     metabuscador.run_virema_v023(fq, sample_name, virus_ref_no_extension, 
                             n_processes)
     t2 = time.time()
-    # Con DItector
+    # With DItector
     metabuscador.run_ditector(fq, sample_name, virus_ref_path, n_processes)
     t3 = time.time()
 
     
-    # 1.2: PROCESAMIENTO DE LOS ALINEAMIENTOS 
+    # 1.2: ALIGNMENT PROCESSING
     # -------------------------------------------------------------------------
     # ALINEAMIENTOS
     ## Si no existe el directorio Outputs/alignments lo creamos
