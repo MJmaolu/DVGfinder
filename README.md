@@ -2,10 +2,11 @@
 <br />
 <p align="center">
   <a href="https://github.com/MJmaolu/DVGfinder">
-    ![](http://147.156.206.144/appweb/LOGODVGfinder_marron.png)
     <img src="http://147.156.206.144/appweb/LOGODVGfinder_marron.png" alt="Logo" width="800" /*height="80"*/>
   </a>
 
+  ![](http://147.156.206.144/appweb/LOGODVGfinder_marron.png)
+  
   <h3 align="center">DVGfinder_v3</h3>
 
   <p align="center">
@@ -43,7 +44,7 @@
 
 <!-- BUILT WITH -->
 ## Built with
-### DVGs identifying algorithms
+### DVGs search algorithms
 
 * **ViReMa-a (0.23)**:
 
