@@ -2,7 +2,7 @@
 <br />
 <p align="center">
   <a href="https://github.com/MJmaolu/DVGfinder">
-    <img src="LOGO DVGfinder_marron.png" alt="Logo" width="800" /*height="80"*/>
+    <img src="http://147.156.206.144/appweb/LOGODVGfinder_marron.png" alt="Logo" width="800" /*height="80"*/>
   </a>
 
   <h3 align="center">DVGfinder_v3</h3>
