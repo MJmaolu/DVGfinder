@@ -2,14 +2,11 @@
 <br />
 <p align="center">
   <a href="https://github.com/MJmaolu/DVGfinder">
-    <img src="http://147.156.206.144/appweb/LOGODVGfinder_marron.png" alt="Logo" width="800" /*height="80"*/>
-  </a>
-
-  ![](http://147.156.206.144/appweb/LOGODVGfinder_marron.png)
-  
+    <img src="http://147.156.206.144/appweb/LOGODVGfinder_marron.png" alt="Logo" width="700" /*height="80"*/>
+  </a>  
   <h3 align="center">DVGfinder_v3</h3>
 
-  <p align="center">
+<p align="center">
     <b>DVGfinder</b> is a tool that integrates the most used DVGs search algorithms, <b>ViReMa-a</b> and <b>DI-tector</b>, in a unique workflow, making the analysis of a sample easier and more intuitive. 
   
   Also, DVGfinder_v3 implements a Gradient Boosting classifier to try to reduce the number of false positives introduced by the search algorithms and generates an HTML report with interactive tables and plots that facilitates a first exploration of the results.
