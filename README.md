@@ -2,6 +2,7 @@
 <br />
 <p align="center">
   <a href="https://github.com/MJmaolu/DVGfinder">
+    ![](http://147.156.206.144/appweb/LOGODVGfinder_marron.png)
     <img src="http://147.156.206.144/appweb/LOGODVGfinder_marron.png" alt="Logo" width="800" /*height="80"*/>
   </a>
 
