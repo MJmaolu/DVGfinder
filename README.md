@@ -2,7 +2,7 @@
 <br />
 <p align="center">
   <a href="https://github.com/MJmaolu/DVGfinder">
-    <img src="http://147.156.206.144/appweb/LOGODVGfinder_marron.png" alt="Logo" width="700" /*height="80"*/>
+    <img src="LOGO DVGfinder_marron.png" alt="Logo" width="700">
   </a>  
   <h3 align="center">DVGfinder_v3</h3>
 
@@ -78,21 +78,16 @@ This third party scripts are in the ExternalNeeds directory so you only have to 
    cd DVGfinder
    ```
    
-3. Unzip model file
-   ```sh
-   unzip gbc_randomOpt_train.sav.zip
-   ```
-   
-4. Give execution permission to all the scripts in the DVGfinder directory
+3. Give execution permission to all the scripts in the DVGfinder directory
    ```sh
    chmod -R +x .
    ```
-5. Create a new environment with conda with all the dependencies needed to run DVGfinder
+4. Create a new environment with conda with all the dependencies needed to run DVGfinder
    ```sh
    conda env create -f dvgfinder_env.yaml
    ```
    
-6. Activate DVGfinder environment 
+5. Activate DVGfinder environment 
    ```sh
    conda activate dvgfinder_env
    ```
