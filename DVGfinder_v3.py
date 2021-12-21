@@ -66,7 +66,7 @@ def main():
     ref = wt_sequence.id # extraemos el identificador utilizado como referencia
 
     ## Predictive model file
-    model_file = "gbc_randomOpt_train.sav"
+    model_file = "gbc_randomOpt.sav"
 
     ###########################################################################
     # PARTE 1: METASEARCH
