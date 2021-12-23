@@ -6,26 +6,29 @@
 ## 
 ##                  DVGfinder: Defective Viral Genome-finder
 ###############################################################################
-##  STRUCTURE:
-##       1.1. DVGS metasearch with ViReMa-a (0.23) and DI-tector (v0.6)
-##       1.2. Alignment processing
-##       1.3. Generation of a unify table with all the detected DVGs and 
-##          
-##       2.   Prediction of the real events with a Gradient Boosting classifier
-##            algorithm trained model
-##       3.   Generation of an HTML report with interactive tables and plots 
-##            3 modes:
-##          - ALL: all the DVGs detected by ViReMa-a and DI-tector
-##          - CONSENSUS: intersection 
-##          - FILTERED: DVGs predicted as reals (p(TP) >= defined threshold)      
+## PROGRAMA PRINCIPAL (controlador):
+##       1.1. Metabúsqueda de DVGs con ViReMa-a (0.23) y DI-tector (v0.6)
+##       1.2. Procesamiento de los alineamientos
+##       1.3. Generación de una tabla conjunta con todos los DVGs detectados y 
+##          extracción de variables
+##       2.   Predicción con el modelo de Random Forest entrenado de los 
+##            eventos reales
+##       3.   Generación del informe HTML con las tablas a mostrar y las 
+##            visualizaciones. 3 modos:
+##          - COMPLETO: DVGs detectados por ViReMa-a + DI-tector
+##          - CONSENSO: solos DVGs detectados por ambos 
+##          - PREDICHO (ML): DVGs predichos como reales con el modelo de ML       
 ##                               
 ###############################################################################
 ## Author: Maria Jose Olmo-Uceda
-## Version: 3.0     
-## - Change in the prediction model --> Gradient Boosting Classifier: 
-##                                      "gbc_randomOpt.sav"
-## Email: mariajose.olmo@csic.es
-## Date: 2021/12/01
+## Version: 2.1     
+## - Continúa el flujo del programa aunque alguno de los algoritmos de búsqueda
+## no encuentre DVGs. Adapta el report mostrando los modos en los que se tiene
+## información.
+## - Es resistente a los caracterizaciones fuera del rango del genoma de 
+## referencia que DI-tector puede dar 
+## Email: maolu@alumni.uv.es
+## Date: 2021/10/10
 ###############################################################################
 
 # system imports
@@ -50,42 +53,44 @@ def main():
     #print(os.listdir())
     t0 = time.time()
 
-    # User parameters
+    # Lee los parámetros introducidos por el usuario
     fq, virus_ref, virus_ref_path, margin, threshold, n_processes = \
         metabuscador.read_arguments_v3()
 
+    # Extraemos el nombre de la muestra
     sample_name = os.path.basename(fq).split(".")[-2]
 
     #ref = "NC_045512.2"
-    ### Reference name without extension
+    ### nombre de la referencia sin la extensión
     virus_ref_no_extension = os.path.basename(virus_ref).split(".")[-2]
 
-    # Genome length
+    # Lee el genoma de referencia del fichero fasta para extraer su longitud
     wt_sequence = SeqIO.read(virus_ref_path, "fasta")
     len_wt = len(wt_sequence)
     ref = wt_sequence.id # extraemos el identificador utilizado como referencia
 
-    ## Predictive model file
+    ## Fichero donde tenemos guardado el modelo
+    # model_file = "rf_noTunning_rfe17.sav"
     model_file = "gbc_randomOpt.sav"
 
     ###########################################################################
-    # PARTE 1: METASEARCH
+    # PARTE 1: METABUSCADOR
     ###########################################################################
     
-    # 1.1: DVG SEARCH
+    # 1.1: IDENTIFICACIÓN DE LOS DVGS
     # -------------------------------------------------------------------------
     t1 = time.time() 
     
-    # With ViReMa-a
+    # Con ViReMa
     metabuscador.run_virema_v023(fq, sample_name, virus_ref_no_extension, 
                             n_processes)
     t2 = time.time()
-    # With DItector
+    # Con DItector
     metabuscador.run_ditector(fq, sample_name, virus_ref_path, n_processes)
     t3 = time.time()
 
     
-    # 1.2: ALIGNMENT PROCESSING
+    # 1.2: PROCESAMIENTO DE LOS ALINEAMIENTOS 
     # -------------------------------------------------------------------------
     # ALINEAMIENTOS
     ## Si no existe el directorio Outputs/alignments lo creamos
