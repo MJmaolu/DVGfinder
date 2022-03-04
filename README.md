@@ -2,7 +2,7 @@
 <br />
 <p align="center">
   <a href="https://github.com/MJmaolu/DVGfinder">
-    <img src="LOGO DVGfinder_marron.png" alt="Logo" width="700">
+    <img src="LOGO_DVGfinder_GradientNegro.pdf" alt="Logo" width="700">
   </a>  
   <h3 align="center">DVGfinder_v3</h3>
 
