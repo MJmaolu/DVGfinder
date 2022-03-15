@@ -94,7 +94,7 @@ This third party scripts are in the ExternalNeeds directory so you only have to 
    conda activate dvgfinder_env
    ```
 
-<!-- USAGE EXAMPLES -->
+<!-- USAGE -->
 ## Usage
 
 ```python3 DVGfinder_v3.py -fq fastq_file [-r virus_reference] [-m margin] [-t threshold] [-n number_processes]```
@@ -129,7 +129,7 @@ python3 DVGfinder_v3.py -fq tumvas72_N100K_l100.fq -t probability_threshold_to_f
 <!-- LABELED DATASET -->
 ## Labeled Dataset
 
-The dataset used to generate the classificator is avalaible as ''. 
+The dataset used to generate the classificator is avalaible as '630N5Ml100_v2_metrics_labeledDataset.csv'. 
 
 For this version of DVGfinder we have used a Gradient Boosting Classifier algorithm to generate the model but I encorage you to play directly with the data and try to improve it. 
 
