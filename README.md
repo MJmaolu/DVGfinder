@@ -33,8 +33,10 @@
         <li><a href="#installation">Installation</a></li>
       </ul>
     </li>
-    <li><a href="#usage">Usage</a></li>
-    <li><a href="#tutorial">Tutorial</a></li>    
+    <li><a hrf="#usage">Usage</a></li>
+    <li><a href="#tutorial">Tutorial</a></li>   
+    <li><a href="#labeled-dataset">Labeled Dataset</a></li>
+    <li><a href="#reference">Reference</a></li>
     <li><a href="#contact">Contact</a></li>
   </ol>
 </details>
@@ -124,7 +126,20 @@ python3 DVGfinder_v3.py -fq tumvas72_N100K_l100.fq -t probability_threshold_to_f
 
 - The same information displayed in the interactive tables is written in csv files.
 
+<!-- LABELED DATASET -->
+## Labeled Dataset
 
+The dataset used to generate the classificator is avalaible as ''. 
+
+For this version of DVGfinder we have used a Gradient Boosting Classifier algorithm to generate the model but I encorage you to play directly with the data and try to improve it. 
+
+<!-- REFERENCE -->
+## Reference
+
+*Preprint version*:
+
+- Olmo-Uceda, M.J.; Muñoz-Sánchez, J.C.; Lasso-Giraldo, W.; Arnau, V.; Díaz-Villanueva, W.; Elena, S.F. DVGfinder: A Metasearch Engine for Identifying Defective Viral Genomes in RNA-Seq Data. *Preprints* 2022, 2022030110 [doi: 10.20944/preprints202203.0110.v1](https://www.preprints.org/manuscript/202203.0110/v1).
+ 
 <!-- CONTACT -->
 ## Contact
 
