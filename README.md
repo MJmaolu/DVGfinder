@@ -97,8 +97,10 @@ This third party scripts are in the ExternalNeeds directory so you only have to 
 <!-- USAGE -->
 ## Usage
 
-```python3 DVGfinder_v3.py -fq fastq_file [-r virus_reference] [-m margin] [-t threshold] [-n number_processes]```
+```python3 DVGfinder_v3.py -fq path_to_fastq_file [-r path_to_fasta_virus_reference] [-m margin] [-t threshold] [-n number_processes]```
 
+`-r` The indexed references for `bwa` and `bowtie` should be in the same path.
+ 
 <!-- TUTORIAL -->
 ## Tutorial
 
@@ -111,7 +113,7 @@ To test the program follow the next steps:
 2. Run DVGfinder on the example sample
 
 ```
-python3 DVGfinder_v3.py -fq tumvas72_N100K_l100.fq -r tumv_reference.fasta -t probability_threshold_to_filter_as_realsDVGs -n number_of_process
+python3 DVGfinder_v3.py -fq tumvas72_N100K_l100.fq -r path_to_virus_reference.fasta -t probability_threshold_to_filter_as_realsDVGs -n number_of_process
 ```
 
 3. Wait and your results will appear in the 'FinalReports' directory. In addition, an html report will open in your default browser.
