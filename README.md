@@ -113,7 +113,7 @@ To test the program follow the next steps:
 2. Run DVGfinder on the example sample
 
 ```
-python3 DVGfinder_v3.py -fq tumvas72_N100K_l100.fq -r path_to_virus_reference.fasta -t probability_threshold_to_filter_as_realsDVGs -n number_of_process
+python3 DVGfinder_v3.py -fq tumvas72_N100K_l100.fq -r ExternalNeeds/references/TuMV-AS.fasta -t probability_threshold_to_filter_as_realsDVGs -n number_of_process
 ```
 
 3. Wait and your results will appear in the 'FinalReports' directory. In addition, an html report will open in your default browser.
