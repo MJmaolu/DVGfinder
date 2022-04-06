@@ -1,0 +1,23 @@
+name: dvgfinder_env
+
+channels:
+  - defaults
+  - bioconda
+  - conda-forge
+
+dependencies:
+  - datapane >= 0.13.0
+  - matplotlib >= 3.4.2
+  - pandas >= 1.2.4
+  - plotly >= 4.14.3
+  - pyfastx = 0.8.3
+  - seaborn = 0.11.1
+  - python >= 3.9
+  - bowtie
+  - samtools >= 1.10
+  - bwa >= 0.7.17
+  - pandas >= 1.2.4
+  - scikit-learn >= 1.0.1
+  - scipy >= 1.6.3
+  - numpy >= 1.19.5
+  - biopython >= 1.79
