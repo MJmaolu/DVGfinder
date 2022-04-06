@@ -185,6 +185,7 @@ def df_to_df_metrics_reduced_v3(df):
     # reducida a las variables que acepta el modelo
     df_metrics_reduced = df_metrics[df_metrics.columns.\
                                     intersection(selected_metrics)]
+    """
     df_metrics_reduced.columns = ['rpht_virema', 'rpht_ditector',
     'pBP_virema', 'pRI_virema', 'pBP_ditector', 'pRI_ditector',
     'sdrm_junction_bt_mapped', 'sdrm_junction_bm_mapped', 
@@ -193,7 +194,7 @@ def df_to_df_metrics_reduced_v3(df):
     'sdrm_neighborsBP_bm_mapped', 'sdrm_neighborsRI_bm_mapped',
     'sdrm_neighborsBP_bt_H', 'sdrm_neighborsRI_bt_H', 
     'sdrm_neighborsBP_bm_H', 'sdrm_neighborsRI_bm_H']
-
+    """
     return df_metrics_reduced
 
 
