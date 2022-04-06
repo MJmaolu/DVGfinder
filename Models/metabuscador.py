@@ -1330,14 +1330,14 @@ def add_stats_alignment(df, alignment_stats):
     
     # asignar el tail_name que añadir en las columnas
     ## algoritm
-    if "bt2" in alignment_stats:
+    if "_bt2_" in alignment_stats:
         al = "_bt2"
-    elif "bm" in alignment_stats:
+    elif "_bm_" in alignment_stats:
         al = "_bm"
     ## filter
-    if "H" in alignment_stats:
+    if "_H_" in alignment_stats:
         tail = "_H" 
-    elif "mapped" in alignment_stats:
+    elif "_mapped_" in alignment_stats:
         tail = "_mapped"
     else:
         tail = "_all" 
