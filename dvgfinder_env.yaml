@@ -17,7 +17,7 @@ dependencies:
   - samtools >= 1.10
   - bwa >= 0.7.17
   - pandas >= 1.2.4
-  - scikit-learn >= 1.0.1
+  - scikit-learn = 1.0.1
   - scipy >= 1.6.3
   - numpy >= 1.19.5
   - biopython >= 1.79
