@@ -157,9 +157,9 @@ Project Link: [https://github.com/MJmaolu/DVGfinder](https://github.com/MJmaolu/
 
 Page Link: [https://mjmaolu.github.io/DVGfinder/](https://mjmaolu.github.io/DVGfinder/)
 
-Repository with Synthetic Data: [https://github.com/MJmaolu/SyntheticSamplesWithDVGs](https://github.com/MJmaolu/SyntheticSamplesWithDVGs)
+Repository with **Synthetic Data**: [https://github.com/MJmaolu/SyntheticSamplesWithDVGs](https://github.com/MJmaolu/SyntheticSamplesWithDVGs)
 
-Repository with Final results on Real Data: []
+Repository with DVGfinder **results on Real Data**: [https://github.com/MJmaolu/results-DVGfinder](https://github.com/MJmaolu/results-DVGfinder)
 
 
 <p align='right'> 
