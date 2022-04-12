@@ -97,7 +97,7 @@ This third party scripts are in the ExternalNeeds directory so you only have to 
 <!-- USAGE -->
 ## Usage
 
-```python3 DVGfinder_v3.py -fq path_to_fastq_file [-r path_to_fasta_virus_reference] [-m margin] [-t threshold] [-n number_processes]```
+```python3 DVGfinder_v3.1.py -fq path_to_fastq_file [-r path_to_fasta_virus_reference] [-m margin] [-t threshold] [-n number_processes] [-s polarity]```
 
 `-r` The fasta of the viral reference and its indexed files by `bwa` and `bowtie` should be all in the path ExternalNeeds/references.
  
