@@ -33,7 +33,7 @@
         <li><a href="#installation">Installation</a></li>
       </ul>
     </li>
-    <li><a hrf="#usage">Usage</a></li>
+    <li><a href="#usage">Usage</a></li>
     <li><a href="#tutorial">Tutorial</a></li>   
     <li><a href="#labeled-dataset">Labeled Dataset</a></li>
     <li><a href="#reference">Reference</a></li>
