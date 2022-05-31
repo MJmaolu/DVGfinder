@@ -138,9 +138,7 @@ For this version of DVGfinder we have used a Gradient Boosting Classifier algori
 <!-- REFERENCE -->
 ## Reference
 
-*Preprint version*:
-
-- Olmo-Uceda, M.J.; Muñoz-Sánchez, J.C.; Lasso-Giraldo, W.; Arnau, V.; Díaz-Villanueva, W.; Elena, S.F. DVGfinder: A Metasearch Engine for Identifying Defective Viral Genomes in RNA-Seq Data. *Preprints* 2022, 2022030110 [doi: 10.20944/preprints202203.0110.v1](https://www.preprints.org/manuscript/202203.0110/v1).
+- Olmo-Uceda MJ, Muñoz-Sánchez JC, Lasso-Giraldo W, Arnau V, Díaz-Villanueva W, Elena SF. DVGfinder: A Metasearch Tool for Identifying Defective Viral Genomes in RNA-Seq Data. Viruses. 2022 May 23;14(5):1114. [doi: 10.3390/v14051114](https://www.mdpi.com/1999-4915/14/5/1114). [PMID: 35632855](https://pubmed.ncbi.nlm.nih.gov/35632855/).
  
 <!-- CONTACT -->
 ## Contact
