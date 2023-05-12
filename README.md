@@ -120,6 +120,7 @@ python3 DVGfinder_v3.1.py -fq tumvas72_N100K_l100/tumvas72_N100K_l100.fq -r Exte
 
 [Link to an example HTML report](http://147.156.206.144/appweb/tumvas72_N100K_l100_report.html)
 
+   
 #### About the HTML report: 
 
 - The results are displayed at three levels (tabs at the top): ALL, CONSENSUS and FILTERED ML. 
@@ -127,6 +128,18 @@ python3 DVGfinder_v3.1.py -fq tumvas72_N100K_l100/tumvas72_N100K_l100.fq -r Exte
 - CONSENSUS and FILTERED ML only appear if both search algorithms have identified DVGs in the sample.
 
 - The same information displayed in the interactive tables is written in csv files.
+
+<!-- PAIRED END FASTQS -->  
+## Note about paired end fastq     
+
+DVGfinder cannot deal directly with paired end fastq. A solution could be to interleave them beforehand in a single fastq file:      
+>read1_pair1    
+>read1_pair2   
+>read2_pair1    
+>read2_pair2    
+>...       
+
+Be careful that the names of the reads are different. If this is not the case, you must add (prior to the interleaving process) a "/1" or "/2" tag at the end of each read name.    
 
 <!-- LABELED DATASET -->
 ## Labeled Dataset
