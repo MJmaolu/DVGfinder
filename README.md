@@ -61,6 +61,32 @@ Beauclair G, Mura M, Combredet C, Tangy F, Jouvenet N, Komarova AV. DI-tector: d
 
 To get a local copy up and running follow these simple steps.
 
+---
+
+⚠️🚨❗ **Important Notice about DVGfinder** ❗🚨⚠️
+
+At some point during 2025, **DVGfinder** was not able to run properly.  
+We sincerely apologize for the inconvenience.
+
+
+✅ The issue has now been **fixed** 🤞
+
+If you experienced problems in the past, please **reset your environment** and **reinstall everything** by following the installation guide bellow.
+
+#### 🔄 Steps to clean up and reinstall:
+##### Remove your existing conda environment
+```sh
+conda remove --name dvgfinder_env --all
+````
+
+##### Remove your local DVGfinder repository 
+```sh
+rm -rf DVGfinder
+```
+⚠️🚨❗**End warning**❗🚨⚠️
+
+---
+
 ### Prerequisites
 
 DVGfinder uses the ViReMa-a (v0.23) and DI-tector_06.py programs. 
