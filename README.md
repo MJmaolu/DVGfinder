@@ -1,12 +1,15 @@
 <!-- PROJECT LOGO -->
+
 <br />
 <p align="center">
   <a href="https://github.com/MJmaolu/DVGfinder">
     <img src="LOGO DVGfinder_marron.png" alt="Logo" width="700">
   </a>  
   <h3 align="center">DVGfinder_v3</h3>
-
 <p align="center">
+ <a href="https://doi.org/10.5281/zenodo.23729762"><img src="https://zenodo.org/badge/383505495.svg" alt="DOI"></a>
+</p>
+<p align="center">  
     <b>DVGfinder</b> is a tool that integrates the most used DVGs search algorithms, <b>ViReMa-a</b> and <b>DI-tector</b>, in a unique workflow, making the analysis of a sample easier and more intuitive. 
   
   Also, DVGfinder_v3 implements a Gradient Boosting classifier to try to reduce the number of false positives introduced by the search algorithms and generates an HTML report with interactive tables and plots that facilitates a first exploration of the results.
