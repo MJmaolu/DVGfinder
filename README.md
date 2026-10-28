@@ -171,7 +171,7 @@ For this version of DVGfinder we have used a Gradient Boosting Classifier algori
 
 María José Olmo-Uceda - mariajose.olmo@csic.es
 
-PhD student
+PhD
 
 *EvolSysVir Group*, I<sup>2</sup>SysBio (CSIC-UV) 
 
